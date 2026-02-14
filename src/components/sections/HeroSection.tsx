@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import GlitchText from "@/components/ui/GlitchText";
+import CyberPlayer from "@/components/ui/CyberPlayer";
 
 interface HeroProps {
   lang: "pt" | "en";
@@ -105,6 +106,11 @@ export default function HeroSection({ lang }: HeroProps) {
             </div>
           ))}
         </div>
+
+          {/* --- PLAYER PROPRIETÁRIO XGH --- */}
+          <div className="mt-12 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+            <CyberPlayer /> 
+          </div>
 
       </div>
 
