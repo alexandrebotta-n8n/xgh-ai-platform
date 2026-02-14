@@ -44,3 +44,13 @@ body {
   from { width: 0%; }
   to { width: 100%; }
 }
+
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+/* Classe utilitária para usar no componente */
+.animate-progress {
+  animation: progress 3s linear forwards;
+}

@@ -6,7 +6,6 @@ interface BlogProps {
   lang: "pt" | "en";
 }
 
-// --- BANCO DE DADOS DOS ARTIGOS (Mantido igual) ---
 const articlesDB = [
   {
     id: "qa",
@@ -279,7 +278,7 @@ export default function BlogSection({ lang }: BlogProps) {
   return (
     <section className="py-20 bg-dark-bg text-white border-t border-gray-900 relative" id="blog-section">
       
-      {/* --- OVERLAY DE CENSURA XGH (A nova funcionalidade) --- */}
+      {/* --- OVERLAY DE CENSURA XGH --- */}
       {censorship.active && (
         <div className="fixed inset-0 z-[10000] bg-red-950/90 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in zoom-in duration-150">
           <div className="max-w-md w-full bg-black border-2 border-red-600 p-8 shadow-[0_0_50px_rgba(220,38,38,0.5)] text-center font-mono">
@@ -290,8 +289,9 @@ export default function BlogSection({ lang }: BlogProps) {
             <p className="text-white text-lg leading-tight uppercase mb-6 drop-shadow-[0_0_5px_rgba(255,0,0,0.8)]">
               {censorship.msg}
             </p>
+            {/* ANIMAÇÃO VIA CLASSE GLOBAL (EVITA O ERRO DE HYDRATION) */}
             <div className="w-full bg-gray-900 h-2 mb-2 rounded overflow-hidden">
-              <div className="bg-red-600 h-full w-full origin-left animate-[progress_3s_linear]"></div>
+              <div className="bg-red-600 h-full w-full origin-left animate-progress"></div>
             </div>
             <p className="text-gray-500 text-[10px] uppercase tracking-widest">
               {lang === 'pt' ? 'Rastreando IP e enviando drone...' : 'Tracking IP and deploying drone...'}
@@ -345,10 +345,7 @@ export default function BlogSection({ lang }: BlogProps) {
                         dangerouslySetInnerHTML={{ __html: art.body[lang] }} 
                       />
                       
-                      {/* --- NOVOS BOTÕES DE AÇÃO --- */}
                       <div className="flex flex-wrap gap-4 mt-8 pt-6 border-t border-gray-900/50">
-                        
-                        {/* Botão de Like Estilizado */}
                         <button 
                             onClick={(e) => handleLike(art.id, e)}
                             className="relative overflow-hidden group/btn flex items-center gap-3 px-6 py-3 bg-black border border-neon-green text-neon-green rounded-sm transition-all hover:bg-neon-green hover:text-black hover:shadow-[0_0_20px_rgba(57,255,20,0.4)] active:scale-95"
@@ -357,7 +354,6 @@ export default function BlogSection({ lang }: BlogProps) {
                             <span className="font-mono font-bold text-sm">{isMounted ? (likes[art.id] || 0) : "..."}</span>
                         </button>
                         
-                        {/* Botão de Deslike (Gatilho da Censura) */}
                         <button 
                             onClick={triggerCensorship}
                             className="flex items-center gap-3 px-6 py-3 bg-black border border-red-900 text-red-900 rounded-sm transition-all hover:border-red-600 hover:text-red-600 hover:bg-red-600/10 active:scale-95 group/dislike"
@@ -370,7 +366,6 @@ export default function BlogSection({ lang }: BlogProps) {
                                 e.stopPropagation();
                                 const url = window.location.origin + '#' + art.id;
                                 navigator.clipboard.writeText(url);
-                                // Feedback visual simples no botão
                                 const btn = e.currentTarget;
                                 const originalText = btn.innerText;
                                 btn.innerText = lang === 'pt' ? 'COPIADO!' : 'COPIED!';
@@ -399,14 +394,6 @@ export default function BlogSection({ lang }: BlogProps) {
             {lang === "pt" ? "Sem direitos reservados. Copie, mas não reclame." : "No rights reserved. Copy, but don't complain."}
         </div>
       </div>
-
-      {/* Estilo local para a animação da barra de progresso do overlay */}
-      <style jsx>{`
-        @keyframes progress {
-          from { transform: scaleX(0); }
-          to { transform: scaleX(1); }
-        }
-      `}</style>
     </section>
   );
 }

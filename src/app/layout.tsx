@@ -2,24 +2,27 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-// Importações da Vercel
+// 1. Importações da Vercel
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// Importação do Google Analytics
+// 2. Importação do Google Analytics
 import { GoogleAnalytics } from '@next/third-parties/google';
+
+// 3. Importação do Easter Egg (Tela Azul)
+// Se der erro aqui, verifique se você criou o arquivo em src/components/ui/BSOD.tsx
+import BSOD from "@/components/ui/BSOD"; 
 
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
 });
 
-// AQUI ESTAVA O ERRO: Agora temos apenas UMA declaração de metadata
 export const metadata: Metadata = {
   title: "XGH-AI | Go Horse Process",
   description: "A evolução da gambiarra com inteligência artificial.",
   icons: {
-    icon: "/icon.png", // Certifique-se que o icon.png está na pasta public
+    icon: "/icon.png",
   },
 };
 
@@ -31,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br" className={`${jetbrains.variable}`}>
       <head>
-        {/* Adicionando FontAwesome para os ícones funcionarem */}
+        {/* FontAwesome para os ícones funcionarem */}
         <link 
           rel="stylesheet" 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
@@ -43,10 +46,13 @@ export default function RootLayout({
       <body className="font-mono bg-dark-bg text-white antialiased">
         {children}
         
-        {/* Componentes de Monitoramento */}
+        {/* Monitoramento */}
         <Analytics />
         <SpeedInsights />
         <GoogleAnalytics gaId="G-SZJLK28667" />
+        
+        {/* Easter Eggs */}
+        <BSOD />
       </body>
     </html>
   );
