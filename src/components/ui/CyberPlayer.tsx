@@ -40,18 +40,26 @@ function PlayerContent() {
     }));
   };
 
+  // Função restaurada para atualizar o progresso
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const cur = audioRef.current.currentTime;
+      const dur = audioRef.current.duration;
+      setCurrentTime(cur);
+      setProgress((cur / dur) * 100);
+    }
+  };
+
   useEffect(() => {
     setIsMounted(true);
     const trackParam = searchParams.get("track");
     
-    // TRATAMENTO DE DEEP LINK
     if (trackParam) {
       const index = parseInt(trackParam) - 1;
       if (index >= 0 && index < playlist.length) {
         setCurrentTrackIndex(index);
         setIsFirstLoad(false); 
 
-        // Aguarda o elemento de áudio estar pronto para tocar e limpar a URL
         const startDeepLink = async () => {
           if (audioRef.current) {
             try {
@@ -59,10 +67,9 @@ function PlayerContent() {
               await audioRef.current.play();
               setIsPlaying(true);
               dispatchPlayerState(true);
-              // SÓ LIMPA A URL APÓS O PLAY TER SUCESSO
               window.history.replaceState({}, '', window.location.pathname);
             } catch (err) {
-              console.log("Autoplay bloqueado. Aguardando interação.");
+              console.log("Autoplay bloqueado pelo navegador.");
             }
           }
         };
@@ -96,15 +103,6 @@ function PlayerContent() {
   const updateTrack = (newIndex: number) => {
     setIsFirstLoad(false);
     setCurrentTrackIndex(newIndex);
-  };
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      const cur = audioRef.current.currentTime;
-      const dur = audioRef.current.duration;
-      setCurrentTime(cur);
-      setProgress((cur / dur) * 100);
-    }
   };
 
   const onLoadedMetadata = () => {
@@ -144,92 +142,93 @@ function PlayerContent() {
 
   return (
     <div className="w-full relative">
-      <div className="relative bg-black border-2 border-gray-800 rounded-t-lg rounded-b-none border-b-0 overflow-hidden">
-        {/* Header do Rack */}
-        <div className="bg-gray-900 px-4 py-2 flex justify-between items-center border-b border-gray-800">
-            <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">XGH_AMP v1.0</span>
-            <div className="flex items-end gap-[2px] h-4">
+      <div className="relative bg-black border-2 border-gray-800 rounded-t-lg rounded-b-none border-b-0 overflow-hidden shadow-2xl">
+        
+        {/* Header Superior */}
+        <div className="bg-gray-900 px-4 py-1.5 flex justify-between items-center border-b border-gray-800">
+            <span className="text-[9px] font-mono text-gray-500 uppercase tracking-[0.2em]">XGH_UNIT.01</span>
+            <div className="flex items-end gap-[2px] h-3">
                 {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className={`w-1 bg-neon-purple ${isPlaying ? 'animate-bounce' : 'h-1'}`} style={{ height: isPlaying && isMounted ? `${Math.floor(Math.random() * 80) + 20}%` : '20%', animationDuration: `${(i * 0.15) + 0.2}s` }}></div>
+                    <div key={i} className={`w-[2px] bg-neon-purple ${isPlaying ? 'animate-bounce' : 'h-[2px]'}`} 
+                         style={{ 
+                            height: isPlaying ? `${Math.floor(Math.random() * 80) + 20}%` : '20%', 
+                            animationDuration: `${(i * 0.1) + 0.2}s` 
+                         }}>
+                    </div>
                 ))}
             </div>
         </div>
 
         {/* Deck de Fita */}
-        <div className="h-28 bg-[#0a0a0a] border-b border-gray-900 flex items-center justify-center gap-16 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-5 bg-[linear-gradient(90deg,transparent_0%,#39ff14_50%,transparent_100%)] bg-[length:200%_100%]"></div>
-            <div className={`relative w-20 h-20 rounded-full border-4 border-gray-800 flex items-center justify-center ${isPlaying ? 'animate-spin-slow' : ''}`}>
-                <div className="w-full h-[1px] bg-gray-800 absolute rotate-0"></div>
-                <div className="w-full h-[1px] bg-gray-800 absolute rotate-45"></div>
-                <div className="w-full h-[1px] bg-gray-800 absolute rotate-90"></div>
-                <div className="w-14 h-14 rounded-full border border-neon-purple/20 bg-black flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-neon-green/80 shadow-[0_0_10px_#39ff14]"></div>
+        <div className="h-24 bg-[#050505] flex items-center justify-center gap-10 relative overflow-hidden border-b border-gray-900/50">
+            <div className={`relative w-16 h-16 rounded-full border-2 border-gray-800 flex items-center justify-center ${isPlaying ? 'animate-spin-slow' : ''}`}>
+                <div className="w-full h-[1px] bg-gray-900 absolute rotate-45"></div>
+                <div className="w-full h-[1px] bg-gray-900 absolute -rotate-45"></div>
+                <div className="w-10 h-10 rounded-full border border-neon-purple/10 bg-black flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-neon-green/60 shadow-[0_0_8px_#39ff14]"></div>
                 </div>
             </div>
-            <div className={`relative w-20 h-20 rounded-full border-4 border-gray-800 flex items-center justify-center ${isPlaying ? 'animate-spin-slow' : ''}`}>
-                <div className="w-full h-[1px] bg-gray-800 absolute rotate-0"></div>
-                <div className="w-full h-[1px] bg-gray-800 absolute rotate-45"></div>
-                <div className="w-full h-[1px] bg-gray-800 absolute rotate-90"></div>
-                <div className="w-14 h-14 rounded-full border border-neon-purple/20 bg-black flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-neon-green/80 shadow-[0_0_10px_#39ff14]"></div>
+            <div className={`relative w-16 h-16 rounded-full border-2 border-gray-800 flex items-center justify-center ${isPlaying ? 'animate-spin-slow' : ''}`}>
+                <div className="w-full h-[1px] bg-gray-900 absolute rotate-45"></div>
+                <div className="w-full h-[1px] bg-gray-900 absolute -rotate-45"></div>
+                <div className="w-10 h-10 rounded-full border border-neon-purple/10 bg-black flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-neon-green/60 shadow-[0_0_8px_#39ff14]"></div>
                 </div>
             </div>
-        </div>
-        
-        {/* Info da Música */}
-        <div className="p-4 text-center bg-black border-t border-gray-900/50">
-            <h3 className="text-white font-bold truncate text-sm tracking-tight">{currentTrack.title}</h3>
-            <p className="text-neon-green text-[9px] font-mono mt-1 uppercase tracking-widest opacity-80">{currentTrack.artist}</p>
         </div>
 
-        {/* Progresso */}
-        <div className="w-full bg-black">
-            <div className="flex justify-between px-4 py-1 font-mono text-[9px] uppercase tracking-tighter text-gray-500">
-                <span>{formatTime(currentTime)}</span>
-                <span className={`${timeLeft < 10 && isPlaying ? 'text-red-500 animate-pulse' : 'text-neon-purple'}`}>
-                    -{formatTime(timeLeft)}
-                </span>
-            </div>
-            <div className="w-full h-1.5 bg-gray-900 cursor-pointer relative" onClick={(e) => {
+        {/* BARRA DE CONTROLE UNIFICADA */}
+        <div className="bg-black px-4 py-3 flex items-center justify-between gap-4 border-b border-gray-900">
+          <div className="flex items-center gap-3">
+            <button onClick={() => updateTrack(currentTrackIndex > 0 ? currentTrackIndex - 1 : playlist.length - 1)} className="text-gray-600 hover:text-neon-green transition-colors">
+              <i className="fa-solid fa-backward-step text-xs"></i>
+            </button>
+            <button onClick={togglePlay} className="w-8 h-8 rounded-full border border-neon-green/50 flex items-center justify-center text-neon-green hover:bg-neon-green hover:text-black transition-all">
+              <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'} text-xs ${!isPlaying && 'ml-0.5'}`}></i>
+            </button>
+            <button onClick={() => updateTrack((currentTrackIndex + 1) % playlist.length)} className="text-gray-600 hover:text-neon-green transition-colors">
+              <i className="fa-solid fa-forward-step text-xs"></i>
+            </button>
+          </div>
+
+          <div className="flex-1 min-w-0 text-center">
+            <h3 className="text-white text-[10px] font-bold truncate tracking-tight uppercase">{currentTrack.title}</h3>
+            <p className="text-neon-green text-[7px] font-mono tracking-[0.2em] opacity-60 uppercase">{currentTrack.artist}</p>
+          </div>
+
+          <div className="flex items-center gap-2 border-l border-gray-800 pl-4">
+            <i className={`fa-solid ${volume === 0 ? 'fa-volume-mute text-red-500' : 'fa-volume-low text-gray-600'} text-[10px]`}></i>
+            <input 
+              type="range" min="0" max="1" step="0.01" value={volume} 
+              onChange={(e) => {
+                const val = parseFloat(e.target.value);
+                setVolume(val);
+                if(audioRef.current) audioRef.current.volume = val;
+              }} 
+              className="w-16 h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-neon-green"
+            />
+          </div>
+        </div>
+
+        {/* Barra de Progresso */}
+        <div className="w-full bg-black group/progress relative h-1.5">
+            <div className="absolute inset-0 bg-gray-900 cursor-pointer" onClick={(e) => {
                 if(audioRef.current) {
                   setIsFirstLoad(false);
                   audioRef.current.currentTime = (e.nativeEvent.offsetX / e.currentTarget.clientWidth) * audioRef.current.duration;
                 }
-            }}>
-                <div className="h-full bg-neon-green shadow-[0_0_10px_#39ff14]" style={{ width: `${progress}%` }}></div>
+            }}></div>
+            <div className="h-full bg-neon-green shadow-[0_0_10px_#39ff14] relative pointer-events-none" style={{ width: `${progress}%` }}>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_#fff] opacity-0 group-hover/progress:opacity-100"></div>
             </div>
         </div>
 
-        {/* CONTROLES */}
-        <div className="bg-black p-5 flex items-center justify-between">
-            <div className="w-12 hidden md:block"></div>
-            <div className="flex items-center gap-8 justify-center flex-1">
-                <button onClick={() => updateTrack(currentTrackIndex > 0 ? currentTrackIndex - 1 : playlist.length - 1)} className="text-gray-500 hover:text-neon-green transition-colors">
-                    <i className="fa-solid fa-backward-step text-xl"></i>
-                </button>
-                <button onClick={togglePlay} className="w-14 h-14 rounded-full border-2 border-neon-green flex items-center justify-center text-neon-green hover:bg-neon-green hover:text-black hover:shadow-[0_0_20px_#39ff14] transition-all relative z-10">
-                    <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'} text-2xl`}></i>
-                </button>
-                <button onClick={() => updateTrack((currentTrackIndex + 1) % playlist.length)} className="text-gray-500 hover:text-neon-green transition-colors">
-                    <i className="fa-solid fa-forward-step text-xl"></i>
-                </button>
-            </div>
-            <div className="flex flex-col items-center gap-2 border-l border-gray-800 pl-4">
-                <div className="relative h-20 flex items-center">
-                    <input 
-                        type="range" 
-                        min="0" max="1" step="0.01" 
-                        value={volume} 
-                        onChange={(e) => {
-                            const val = parseFloat(e.target.value);
-                            setVolume(val);
-                            if(audioRef.current) audioRef.current.volume = val;
-                        }} 
-                        className="volume-slider-vertical cursor-pointer" 
-                    />
-                </div>
-                <i className={`fa-solid ${volume === 0 ? 'fa-volume-mute text-red-500' : 'fa-volume-high text-gray-500'} text-[10px]`}></i>
-            </div>
+        {/* Footer com Timers */}
+        <div className="flex justify-between px-4 py-1.5 bg-black font-mono text-[8px] tracking-widest text-gray-600">
+            <span>{formatTime(currentTime)}</span>
+            <span className={timeLeft < 10 && isPlaying ? 'text-red-500 animate-pulse' : 'text-neon-purple opacity-40'}>
+              {formatTime(duration)}
+            </span>
         </div>
         
         <audio 
