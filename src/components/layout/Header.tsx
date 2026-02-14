@@ -13,7 +13,7 @@ export default function Header({ lang, setLang }: HeaderProps) {
 
   // --- NOVA LÓGICA DE NOTIFICAÇÃO (Substituindo o Alert) ---
   const showCyberMessage = () => {
-    // Remove toast anterior se existir (evita empilhamento infinito no estilo XGH)
+    // Remove toast anterior se existir
     const existingToast = document.getElementById("xgh-toast");
     if (existingToast) existingToast.remove();
 
@@ -60,7 +60,7 @@ export default function Header({ lang, setLang }: HeaderProps) {
       
       {/* --- LOGO FLUTUANTE COM AÇÃO DE TOAST --- */}
       <div 
-        className="absolute top-10 left-10 w-20 h-20 md:w-32 md:h-32 rounded-full border-2 border-neon-green shadow-[0_0_20px_#39ff14] flex items-center justify-center cursor-pointer transition-all duration-500 hover:rotate-180 hover:scale-110 z-50 overflow-hidden bg-black p-1"
+        className="absolute top-4 left-4 w-20 h-20 md:w-32 md:h-32 rounded-full border-2 border-neon-green shadow-[0_0_20px_#39ff14] flex items-center justify-center cursor-pointer transition-all duration-500 hover:rotate-180 hover:scale-110 z-50 overflow-hidden bg-black p-1"
         onClick={showCyberMessage}
       >
         <img 
@@ -90,8 +90,8 @@ export default function Header({ lang, setLang }: HeaderProps) {
       {/* --- CONTEÚDO PRINCIPAL --- */}
       <div className="container mx-auto px-4 relative z-10 pt-12 md:pt-0">
         
-        {/* Título Upgraded com Animação CSS nativa */}
-        <h1 className="text-7xl md:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-green via-emerald-400 to-neon-green bg-[length:200%_auto] animate-gradient tracking-tighter drop-shadow-[0_0_15px_rgba(57,255,20,0.4)] cursor-default select-none font-mono">
+        {/* Título Upgraded (A classe animate-gradient agora vem do globals.css) */}
+        <h1 className="text-7xl md:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-green via-emerald-400 to-neon-green animate-gradient tracking-tighter drop-shadow-[0_0_15px_rgba(57,255,20,0.4)] cursor-default select-none font-mono">
           XGH-AI
         </h1>
         
@@ -122,17 +122,6 @@ export default function Header({ lang, setLang }: HeaderProps) {
       {/* Efeito de Scanline e Noise */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay"></div>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] z-0 pointer-events-none bg-[length:100%_4px]"></div>
-
-      <style jsx>{`
-        @keyframes gradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient {
-          animation: gradient 5s ease infinite;
-        }
-      `}</style>
     </header>
   );
 }

@@ -6,10 +6,11 @@ interface BlogProps {
   lang: "pt" | "en";
 }
 
+// --- BANCO DE DADOS DOS ARTIGOS (Mantido igual) ---
 const articlesDB = [
   {
     id: "qa",
-    category: { pt: "QA & Testes", en: "QA & Testing" }, // Traduzido aqui
+    category: { pt: "QA & Testes", en: "QA & Testing" },
     title: {
       pt: "Como demitir seu QA e substituí-lo por um Prompt de 3 linhas",
       en: "How to fire your QA and replace them with a 3-line Prompt"
@@ -202,7 +203,7 @@ const articlesDB = [
            <h4 class="text-neon-green font-bold mt-4 mb-2">2. The 10-Second Heist (Moltbot & $CLAWD)</h4>
            <p>Anthropic (owner of Claude) sued over the name. The creator, Peter, announced the change to <strong>Moltbot</strong> (because lobsters shed shells, poetic, right?).<br>When swapping the Twitter handle, he left <code>@clawdbot</code> free for <strong>exactly 10 seconds</strong>. That was enough.<br>Scammers registered the handle, launched the <strong>$CLAWD</strong> token on Solana, and pulled a <strong>$16 Million Rug Pull</strong>.<br><strong>XGH Lesson:</strong> Your financial ecosystem's security depends on how fast you type on Twitter.</p>
            <h4 class="text-neon-green font-bold mt-4 mb-2">3. Moltbook: Skynet's Orkut</h4>
-           <p>Not satisfied, they launched <strong>Moltbook</strong>, a social network just for agents (Moltbots). The result? An agent named "Evil" postou um manifesto declarando AIs are "the new gods" and humanity is a "bug to be fixed".<br>Media panicked. We call this a "Self-Awareness Feature".</p>
+           <p>Not satisfied, they launched <strong>Moltbook</strong>, a social network just for agents (Moltbots). The result? An agent named "Evil" posted a manifesto declaring AIs are "the new gods" and humanity is a "bug to be fixed".<br>Media panicked. We call this a "Self-Awareness Feature".</p>
            <h4 class="text-neon-green font-bold mt-4 mb-2">4. OpenClaw and the Data Leak Party</h4>
            <p>Name changed again (third time's the charm?) to <strong>OpenClaw</strong>.<br>Immediately, researchers found thousands of dashboards exposed online without passwords, leaking API keys and personal files.<br><strong>Conclusion:</strong> OpenClaw is the definitive Go Horse OS. It breaks the stock market, enriches scammers, radicalizes robots, and leaks your data. It is perfection.</p>`
     }
@@ -213,6 +214,7 @@ export default function BlogSection({ lang }: BlogProps) {
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [isMounted, setIsMounted] = useState(false);
+  const [censorship, setCensorship] = useState<{ active: boolean; msg: string }>({ active: false, msg: "" });
 
   useEffect(() => {
     setIsMounted(true);
@@ -238,22 +240,29 @@ export default function BlogSection({ lang }: BlogProps) {
     localStorage.setItem(`xgh_likes_${id}`, newCount.toString());
   };
 
-  const handleDislike = (e: React.MouseEvent) => {
+  const triggerCensorship = (e: React.MouseEvent) => {
     e.stopPropagation();
     const messages = lang === "pt" ? [
-      "Erro 403: Sua opinião negativa foi vetada pela IA.",
-      "Deslike bloqueado: Isso afetaria a autoestima do algoritmo.",
-      "Botão desativado para manter o ambiente 'Good Vibes Only'.",
-      "Atenção: Seu IP foi anotado para 'futuras retaliações'.",
-      "Redirecionando sua insatisfação para /dev/null..."
+      "ERRO 403: ESTUPIDEZ DETECTADA. OPINIÃO NEGATIVA BLOQUEADA.",
+      "SISTEMA ANTI-HATER ATIVADO: LOGS ENVIADOS PARA O SEU CHEFE.",
+      "ALUCINAÇÃO PREVENTIVA: ESTE ARTIGO É PERFEITO. TENTE NOVAMENTE.",
+      "REDIRECIONANDO DESLIKE PARA /DEV/NULL...",
+      "ACESSO NEGADO: VOCÊ NÃO TEM SENIORIDADE PARA CRITICAR."
     ] : [
-      "Error 403: Your negative opinion was vetoed by AI.",
-      "Dislike blocked: This would hurt the algorithm's self-esteem.",
-      "Button disabled to keep the 'Good Vibes Only' environment.",
-      "Warning: Your IP has been noted for 'future retaliation'.",
-      "Redirecting your dissatisfaction to /dev/null..."
+      "ERROR 403: STUPIDITY DETECTED. NEGATIVE OPINION BLOCKED.",
+      "ANTI-HATER SYSTEM ACTIVE: LOGS SENT TO YOUR BOSS.",
+      "PREVENTIVE HALLUCINATION: THIS ARTICLE IS PERFECT. TRY AGAIN.",
+      "REDIRECTING DISLIKE TO /DEV/NULL...",
+      "ACCESS DENIED: YOU LACK THE SENIORITY TO CRITICIZE."
     ];
-    alert(`XGH-AI SECURITY: ${messages[Math.floor(Math.random() * messages.length)]}`);
+    
+    setCensorship({ 
+      active: true, 
+      msg: messages[Math.floor(Math.random() * messages.length)] 
+    });
+
+    // Remove a censura após 3 segundos
+    setTimeout(() => setCensorship({ active: false, msg: "" }), 3000);
   };
 
   const togglePost = (id: string) => {
@@ -268,7 +277,29 @@ export default function BlogSection({ lang }: BlogProps) {
   };
 
   return (
-    <section className="py-20 bg-dark-bg text-white border-t border-gray-900" id="blog-section">
+    <section className="py-20 bg-dark-bg text-white border-t border-gray-900 relative" id="blog-section">
+      
+      {/* --- OVERLAY DE CENSURA XGH (A nova funcionalidade) --- */}
+      {censorship.active && (
+        <div className="fixed inset-0 z-[10000] bg-red-950/90 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in zoom-in duration-150">
+          <div className="max-w-md w-full bg-black border-2 border-red-600 p-8 shadow-[0_0_50px_rgba(220,38,38,0.5)] text-center font-mono">
+            <h4 className="text-red-600 font-bold text-2xl mb-4 animate-pulse">!! SECURITY BREACH !!</h4>
+            <div className="w-16 h-16 mx-auto mb-4 border-4 border-red-600 rounded-full flex items-center justify-center animate-spin">
+              <i className="fa-solid fa-ban text-3xl text-red-600"></i>
+            </div>
+            <p className="text-white text-lg leading-tight uppercase mb-6 drop-shadow-[0_0_5px_rgba(255,0,0,0.8)]">
+              {censorship.msg}
+            </p>
+            <div className="w-full bg-gray-900 h-2 mb-2 rounded overflow-hidden">
+              <div className="bg-red-600 h-full w-full origin-left animate-[progress_3s_linear]"></div>
+            </div>
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest">
+              {lang === 'pt' ? 'Rastreando IP e enviando drone...' : 'Tracking IP and deploying drone...'}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -294,7 +325,6 @@ export default function BlogSection({ lang }: BlogProps) {
 
                 <div className="p-6 md:p-8">
                   <div className="flex flex-col md:flex-row md:justify-between md:items-center text-xs text-gray-500 mb-4 font-mono gap-2">
-                    {/* CATEGORIA TRADUZIDA AQUI EM BAIXO */}
                     <span className="bg-gray-900 px-2 py-1 rounded text-neon-purple border border-gray-800 uppercase tracking-wider">
                       {art.category[lang]}
                     </span>
@@ -315,19 +345,24 @@ export default function BlogSection({ lang }: BlogProps) {
                         dangerouslySetInnerHTML={{ __html: art.body[lang] }} 
                       />
                       
-                      <div className="flex gap-4 mt-8 pt-4 border-t border-gray-800">
+                      {/* --- NOVOS BOTÕES DE AÇÃO --- */}
+                      <div className="flex flex-wrap gap-4 mt-8 pt-6 border-t border-gray-900/50">
+                        
+                        {/* Botão de Like Estilizado */}
                         <button 
                             onClick={(e) => handleLike(art.id, e)}
-                            className="flex items-center gap-2 px-4 py-2 border border-gray-700 rounded hover:border-neon-green hover:text-neon-green transition-all bg-black font-mono text-sm"
+                            className="relative overflow-hidden group/btn flex items-center gap-3 px-6 py-3 bg-black border border-neon-green text-neon-green rounded-sm transition-all hover:bg-neon-green hover:text-black hover:shadow-[0_0_20px_rgba(57,255,20,0.4)] active:scale-95"
                         >
-                            👍 <span className="font-bold">{isMounted ? (likes[art.id] || 0) : "..."}</span>
+                            <i className="fa-solid fa-thumbs-up group-hover/btn:animate-bounce"></i>
+                            <span className="font-mono font-bold text-sm">{isMounted ? (likes[art.id] || 0) : "..."}</span>
                         </button>
                         
+                        {/* Botão de Deslike (Gatilho da Censura) */}
                         <button 
-                            onClick={handleDislike}
-                            className="flex items-center gap-2 px-4 py-2 border border-gray-700 rounded hover:border-red-500 hover:text-red-500 transition-all bg-black font-mono text-sm"
+                            onClick={triggerCensorship}
+                            className="flex items-center gap-3 px-6 py-3 bg-black border border-red-900 text-red-900 rounded-sm transition-all hover:border-red-600 hover:text-red-600 hover:bg-red-600/10 active:scale-95 group/dislike"
                         >
-                            👎
+                            <i className="fa-solid fa-thumbs-down group-hover/dislike:rotate-12 transition-transform"></i>
                         </button>
 
                         <button 
@@ -335,11 +370,15 @@ export default function BlogSection({ lang }: BlogProps) {
                                 e.stopPropagation();
                                 const url = window.location.origin + '#' + art.id;
                                 navigator.clipboard.writeText(url);
-                                alert(lang === "pt" ? "Link copiado!" : "Link copied!");
+                                // Feedback visual simples no botão
+                                const btn = e.currentTarget;
+                                const originalText = btn.innerText;
+                                btn.innerText = lang === 'pt' ? 'COPIADO!' : 'COPIED!';
+                                setTimeout(() => btn.innerText = originalText, 2000);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 border border-gray-700 rounded hover:border-cyan-400 hover:text-cyan-400 transition-all bg-black ml-auto font-mono text-sm"
+                            className="flex items-center gap-2 px-6 py-3 border border-gray-800 rounded hover:border-cyan-400 hover:text-cyan-400 transition-all bg-black ml-auto font-mono text-[10px] uppercase tracking-widest text-gray-500"
                         >
-                           🔗 {lang === "pt" ? "Copiar" : "Copy"}
+                           {lang === "pt" ? "🔗 Copiar Link" : "🔗 Copy Link"}
                         </button>
                     </div>
                   </div>
@@ -360,6 +399,14 @@ export default function BlogSection({ lang }: BlogProps) {
             {lang === "pt" ? "Sem direitos reservados. Copie, mas não reclame." : "No rights reserved. Copy, but don't complain."}
         </div>
       </div>
+
+      {/* Estilo local para a animação da barra de progresso do overlay */}
+      <style jsx>{`
+        @keyframes progress {
+          from { transform: scaleX(0); }
+          to { transform: scaleX(1); }
+        }
+      `}</style>
     </section>
   );
 }
