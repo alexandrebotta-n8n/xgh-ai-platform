@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-// Importando todas as seções
+// Importando as seções necessárias
 import HeroSection from "@/components/sections/HeroSection";
 import ManifestoSection from "@/components/sections/ManifestoSection";
 import GeneratorSection from "@/components/sections/GeneratorSection";
@@ -10,7 +10,8 @@ import SquadsSection from "@/components/sections/SquadsSection";
 import BlogSection from "@/components/sections/BlogSection";
 import GlossarySection from "@/components/sections/GlossarySection";
 import TermsSection from "@/components/sections/TermsSection";
-import Footer from "@/components/layout/Footer"; // <--- IMPORTAR O NOVO FOOTER
+// DiscographySection removida daqui pois agora é filha da HeroSection
+import Footer from "@/components/layout/Footer"; 
 
 export default function Home() {
   const [lang, setLang] = useState<"pt" | "en">("pt");
@@ -35,15 +36,21 @@ export default function Home() {
         ))}
       </div>
 
+      {/* A DiscographySection agora vive dentro da HeroSection 
+          para compor o Console de Áudio Unificado.
+      */}
       <HeroSection lang={lang} />
+      
       <ManifestoSection lang={lang} />
       <GeneratorSection lang={lang} />
       <SquadsSection lang={lang} />
+      
+      {/* A chamada duplicada da DiscographySection foi removida daqui */}
+      
       <BlogSection lang={lang} />
       <GlossarySection lang={lang} />
       <TermsSection lang={lang} />
 
-      {/* USANDO O COMPONENTE FOOTER AQUI */}
       <Footer lang={lang} /> 
 
     </main>

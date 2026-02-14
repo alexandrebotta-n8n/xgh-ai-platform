@@ -27,11 +27,22 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Animação do Texto XGH-AI */
+/* --- ANIMAÇÕES --- */
+
 @keyframes gradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .animate-gradient {
@@ -39,23 +50,17 @@ body {
   background-size: 200% auto;
 }
 
-/* Animação da Barra de Progresso (Overlay de Censura) */
-@keyframes progress {
-  from { width: 0%; }
-  to { width: 100%; }
-}
-
-@keyframes progress {
-  from { width: 0%; }
-  to { width: 100%; }
-}
-
-/* Classe utilitária para usar no componente */
 .animate-progress {
   animation: progress 3s linear forwards;
 }
 
-/* --- SCROLLBAR CUSTOMIZADA --- */
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+/* --- SCROLLBARS --- */
+
+/* Scrollbar Geral do Site */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -65,7 +70,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #39ff14; /* Neon Green */
+  background: #39ff14;
   border-radius: 4px;
 }
 
@@ -73,8 +78,66 @@ body {
   background: #32d612;
 }
 
+/* Custom Scrollbar para o Rack de Áudio */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #39ff14;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #bc13fe;
+}
+
 /* Seleção de texto Cyberpunk */
 ::selection {
-  background: #bc13fe; /* Neon Purple */
+  background: #bc13fe;
   color: #fff;
+}
+
+/* --- CONTROLE DE VOLUME VERTICAL --- */
+
+.volume-slider-vertical {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 80px; /* Invertido para o transform */
+  height: 4px;
+  background: #1a1a1a;
+  outline: none;
+  border-radius: 2px;
+  /* O segredo para funcionar em todos os browsers é o transform */
+  transform: rotate(-90deg); 
+  background-image: linear-gradient(#bc13fe, #bc13fe);
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Estilo do "Botão" do Slider (Thumb) */
+.volume-slider-vertical::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 20px;
+  width: 12px;
+  border-radius: 2px;
+  background: #bc13fe;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(188, 19, 254, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.volume-slider-vertical::-moz-range-thumb {
+  height: 20px;
+  width: 12px;
+  border-radius: 2px;
+  background: #bc13fe;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(188, 19, 254, 0.8);
+  border: none;
 }
