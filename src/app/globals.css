@@ -54,3 +54,27 @@ body {
 .animate-progress {
   animation: progress 3s linear forwards;
 }
+
+/* --- SCROLLBAR CUSTOMIZADA --- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #39ff14; /* Neon Green */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #32d612;
+}
+
+/* Seleção de texto Cyberpunk */
+::selection {
+  background: #bc13fe; /* Neon Purple */
+  color: #fff;
+}

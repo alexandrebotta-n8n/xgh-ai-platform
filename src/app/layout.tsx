@@ -2,15 +2,13 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-// 1. Importações da Vercel
+// Analytics
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-
-// 2. Importação do Google Analytics
 import { GoogleAnalytics } from '@next/third-parties/google';
 
-// 3. Importação do Easter Egg (Tela Azul)
-// Se der erro aqui, verifique se você criou o arquivo em src/components/ui/BSOD.tsx
+// Componentes Globais
+import MatrixRain from "@/components/ui/MatrixRain";
 import BSOD from "@/components/ui/BSOD"; 
 
 const jetbrains = JetBrains_Mono({
@@ -34,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br" className={`${jetbrains.variable}`}>
       <head>
-        {/* FontAwesome para os ícones funcionarem */}
+        {/* --- AQUI ESTÁ A CORREÇÃO: FONTAWESOME 6.4.0 --- */}
         <link 
           rel="stylesheet" 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
@@ -43,15 +41,12 @@ export default function RootLayout({
           referrerPolicy="no-referrer" 
         />
       </head>
-      <body className="font-mono bg-dark-bg text-white antialiased">
+      <body className="font-mono bg-dark-bg text-white antialiased selection:bg-neon-purple selection:text-white">
+        <MatrixRain />
         {children}
-        
-        {/* Monitoramento */}
         <Analytics />
         <SpeedInsights />
         <GoogleAnalytics gaId="G-SZJLK28667" />
-        
-        {/* Easter Eggs */}
         <BSOD />
       </body>
     </html>

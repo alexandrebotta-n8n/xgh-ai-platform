@@ -1,95 +1,115 @@
 "use client";
 
+import { useState } from "react";
+import GlitchText from "@/components/ui/GlitchText";
+
 interface HeroProps {
   lang: "pt" | "en";
 }
 
 export default function HeroSection({ lang }: HeroProps) {
-  
-  // --- DADOS DO CONTEÚDO (Extraídos do seu index.html) ---
-  const content = {
-    introTitle: {
-      pt: "eXtreme Go Horse Process + AI",
-      en: "eXtreme Go Horse Process + AI"
-    },
-    introText: {
-      pt: "No eXtreme Go Horse Process + AI, a Inteligência Artificial assume o cargo de estagiário de luxo e bode expiatório jurídico: se o commit quebrar, foi alucinação do modelo; se funcionar, o mérito (e o bônus) é inteiramente seu. Abolimos a burocracia da documentação em favor de prompts efêmeros que ninguém vai salvar, e encaramos a refatoração como um sinal de fraqueza — afinal, tentar limpar um código ilegível que já subiu para produção é apenas medo do sucesso. E quando a janela de contexto estourar e a máquina esquecer tudo o que fez há 10 minutos? Celebre. A amnésia digital não é um bug, é a oportunidade divina de ignorar o legado técnico recente e recomeçar o caos do zero.",
-      en: "In the eXtreme Go Horse Process + AI, Artificial Intelligence takes on the role of luxury intern and legal scapegoat: if the commit breaks, it was a model hallucination; if it works, the credit (and the bonus) is entirely yours. We abolish the bureaucracy of documentation in favor of ephemeral prompts that no one will save, and we view refactoring as a sign of weakness—after all, trying to clean up illegible code that has already gone to production is just fear of success. And when the context window bursts and the machine forgets everything it did 10 minutes ago? Celebrate. Digital amnesia is not a bug, it's the divine opportunity to ignore the recent technical legacy and restart the chaos from zero."
-    },
-    lawsTitle: {
-      pt: "O Manifesto XGH-AI: As Novas Leis",
-      en: "The XGH-AI Manifesto: The New Laws"
-    },
-    lawsQuote: {
-      pt: '"A eficiência é medida pela ausência de vergonha na cara."',
-      en: '"Efficiency is measured by the lack of shame."'
-    },
-    laws: {
-      pt: [
-        "01. A IA é o Escudo Supremo: O código da IA é perfeito até que se prove o contrário. Se houver erro, a culpa é da alucinação, nunca do dev.",
-        "02. O Fim da Dúvida Metódica: Se a IA sugeriu e o código compilou, o deploy é obrigatório. Testar é um ato de desconfiança contra a máquina.",
-        "03. Complexidade é Prestígio: Se a IA gerar 500 linhas para algo simples, mantenha as 500. Código extenso intimida auditores.",
-        "04. Janela de Contexto Curta: Se a IA esqueceu o que fez há 10 minutos, você também tem o direito de esquecer. O passado é um log deletado.",
-        "05. Documentação é Alucinação: Se o código é autoexplicativo para um LLM, deveria ser para o seu colega. Se ele não entende, o problema é o processador dele.",
-        "06. Refatoração é Pecado: Mexer em código gerado que está funcionando é como tentar consertar um castelo de cartas com um ventilador ligado.",
-        "07. O Cliente é o Beta-Tester Final: Por que gastar tokens com testes se o cliente tem uma infraestrutura completa para testar em tempo real?",
-        "08. Padrões Opcionais: SOLID, DRY e Clean Code são construções sociais. O único padrão real é o Prompt-Driven Development (PDD).",
-        "09. A Culpa é do Modelo: Se algo der errado, a justificativa oficial é 'O modelo não convergiu para a solução ótima neste cenário estocástico'.",
-        "10. Go Horse é Agile: Se você está correndo atrás do rabo e entregando bugs rápidos, você é Agile. A IA só acelera a velocidade do desastre."
-      ],
-      en: [
-        "01. AI is the Ultimate Shield: AI code is perfect until proven otherwise. If there is an error, it is hallucination's fault, never the dev's.",
-        "02. The End of Methodical Doubt: If AI suggested it and the code compiled, deployment is mandatory. Testing is an act of mistrust against the machine.",
-        "03. Complexity is Prestige: If AI generates 500 lines for something simple, keep the 500. Extensive code intimidates auditors.",
-        "04. Short Context Window: If AI forgot what it did 10 minutes ago, you also have the right to forget. The past is a deleted log.",
-        "05. Documentation is Hallucination: If the code is self-explanatory to an LLM, it should be to your colleague. If they don't understand, the problem is their processor.",
-        "06. Refactoring is Sin: Tampering with generated code that works is like trying to fix a house of cards with a fan on.",
-        "07. The Client is the Final Beta-Tester: Why spend tokens on tests if the client has a full infrastructure to test in real-time?",
-        "08. Optional Patterns: SOLID, DRY, and Clean Code are social constructs. The only real standard is Prompt-Driven Development (PDD).",
-        "09. Blame the Model: If something goes wrong, the official justification is 'The model did not converge to the optimal solution in this stochastic scenario'.",
-        "10. Go Horse is Agile: If you are chasing your tail and delivering fast bugs, you are Agile. AI only accelerates the speed of disaster."
-      ]
-    }
+  // Função auxiliar para tradução
+  const t = (pt: string, en: string) => (lang === "pt" ? pt : en);
+
+  // --- LÓGICA DO EASTER EGG (TOAST DO KERNEL) ---
+  const showCyberMessage = () => {
+    const existingToast = document.getElementById("xgh-toast");
+    if (existingToast) existingToast.remove();
+
+    const toast = document.createElement("div");
+    toast.id = "xgh-toast";
+    toast.className = `
+      fixed bottom-8 left-8 z-[9999] 
+      bg-black/90 border-l-4 border-neon-green p-5 
+      shadow-[0_0_30px_rgba(57,255,20,0.2)] backdrop-blur-md
+      font-mono animate-in slide-in-from-left-10 fade-in duration-300
+      max-w-sm
+    `;
+    
+    toast.innerHTML = `
+      <div class="flex items-start gap-4">
+        <div class="mt-1 w-2 h-2 bg-neon-green animate-ping rounded-full shrink-0"></div>
+        <div>
+          <p class="text-neon-green font-bold text-[10px] uppercase tracking-[0.2em] mb-1">XGH_KERNEL_MSG</p>
+          <p class="text-white text-xs leading-relaxed">
+            ${t(
+              "Atenção: A estabilidade deste sistema é uma ilusão coletiva. Não respire perto do servidor.",
+              "Warning: This system's stability is a collective illusion. Do not breathe near the server."
+            )}
+          </p>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transition = "opacity 0.5s ease";
+      setTimeout(() => toast.remove(), 500);
+    }, 5000);
   };
 
   return (
-    <>
-      {/* --- SEÇÃO DE INTRODUÇÃO --- */}
-      <section className="py-16 md:py-24 border-l-4 border-neon-green bg-card-bg/50 backdrop-blur-sm my-10 mx-4 md:mx-0 p-6 md:p-12 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-          {content.introTitle[lang]}
-        </h2>
-        
-        <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed text-lg text-justify">
-          <p>{content.introText[lang]}</p>
-        </div>
-      </section>
+    <section className="relative min-h-[90vh] flex flex-col justify-center items-center text-center overflow-hidden pt-20">
+      
+      {/* --- LOGOTIPO (AGORA MAIOR E OCUPANDO TODO O CÍRCULO) --- */}
+      <div 
+        className="absolute top-6 left-6 z-50 w-20 h-20 md:w-32 md:h-32 rounded-full border border-neon-green/30 bg-black/50 backdrop-blur-sm shadow-[0_0_20px_rgba(57,255,20,0.1)] flex items-center justify-center cursor-pointer transition-all duration-700 hover:rotate-[360deg] hover:scale-110 hover:border-neon-green group p-1"
+        onClick={showCyberMessage}
+        title={t("Clique para checar a integridade do sistema", "Click to check system integrity")}
+      >
+        <img 
+          src="/logo.png" 
+          alt="XGH Logo" 
+          /* AQUI ESTAVA O PROBLEMA: Mudei de w-3/4 para w-full h-full */
+          className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]" 
+        />
+      </div>
 
-      {/* --- SEÇÃO DO MANIFESTO (LEIS) --- */}
-      <section className="py-16 md:py-20 my-10 mx-4 md:mx-0 bg-[#1a1a1a] border-l-4 border-neon-green p-6 md:p-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-neon-green uppercase border-b-2 border-neon-green pb-4 mb-4">
-          {content.lawsTitle[lang]}
-        </h2>
+      <div className="container mx-auto px-4 z-10 space-y-8">
         
-        <p className="text-gray-500 italic mb-8 text-lg">
-          {content.lawsQuote[lang]}
+        {/* Badge de Status */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neon-green/30 bg-neon-green/5 backdrop-blur-sm animate-in fade-in slide-in-from-top-4 duration-700">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-green opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-green"></span>
+          </span>
+          <span className="text-neon-green text-[10px] font-mono tracking-widest uppercase">
+            {lang === "pt" ? "Sistema Operacional v1.0" : "System Operational v1.0"}
+          </span>
+        </div>
+
+        {/* Título Principal com Glitch */}
+        <h1 className="text-6xl md:text-9xl font-bold tracking-tighter text-white drop-shadow-[0_0_30px_rgba(57,255,20,0.1)]">
+          <GlitchText text="XGH-AI" as="span" />
+        </h1>
+
+        <p className="text-lg md:text-2xl text-gray-400 max-w-3xl mx-auto font-light leading-relaxed px-4">
+          {lang === "pt" 
+            ? "A metodologia Go Horse elevada à potência da Inteligência Artificial."
+            : "The Go Horse methodology raised to the power of Artificial Intelligence."}
         </p>
 
-        <div className="grid grid-cols-1 gap-6">
-          {content.laws[lang].map((law, index) => {
-            // Separa o título (em negrito) do resto do texto
-            const [title, ...rest] = law.split(":");
-            return (
-              <div key={index} className="text-gray-300 text-lg border-b border-gray-800 pb-4 last:border-0 hover:text-white transition-colors">
-                <strong className="text-neon-purple block md:inline mb-1 md:mb-0 mr-2">
-                  {title}:
-                </strong>
-                {rest.join(":")}
-              </div>
-            );
-          })}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-12 pt-8 border-t border-gray-800/50">
+          {[
+            { label: "Bugs/Min", val: "∞", color: "text-neon-purple" },
+            { label: "Uptime", val: "42%", color: "text-white" },
+            { label: "Coffees", val: "9000+", color: "text-white" },
+            { label: "Deploys", val: "Fridays", color: "text-red-500" }
+          ].map((stat, i) => (
+            <div key={i} className="p-4 rounded bg-gray-900/20 border border-gray-800/50 hover:border-neon-green/30 transition-all hover:bg-gray-900/40 group">
+              <div className={`text-3xl font-bold font-mono mb-1 ${stat.color} group-hover:scale-110 transition-transform`}>{stat.val}</div>
+              <div className="text-[10px] uppercase tracking-wider text-gray-500">{stat.label}</div>
+            </div>
+          ))}
         </div>
-      </section>
-    </>
+
+      </div>
+
+      {/* Degradê inferior */}
+      <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-dark-bg to-transparent pointer-events-none"></div>
+    </section>
   );
 }

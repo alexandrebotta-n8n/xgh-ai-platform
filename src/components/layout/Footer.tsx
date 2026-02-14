@@ -6,39 +6,48 @@ interface FooterProps {
 
 export default function Footer({ lang }: FooterProps) {
   return (
-    <footer className="py-12 border-t border-neon-green/20 bg-black text-center relative overflow-hidden">
-      <div className="container mx-auto px-4 relative z-10">
+    <footer className="bg-black border-t border-gray-900 py-12 relative overflow-hidden z-10">
+      
+      {/* Linha de brilho no topo */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-neon-green to-transparent opacity-50"></div>
+
+      <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
         
-        {/* Link Social X (Twitter) */}
-        <div className="mb-8">
-          <a 
-            href="https://x.com/xgh_ai" // <-- TROQUE PELO SEU LINK REAL
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-900 text-white border border-gray-700 hover:bg-black hover:border-neon-green hover:text-neon-green hover:shadow-[0_0_15px_rgba(57,255,20,0.5)] transition-all duration-300 transform hover:scale-110"
-          >
-            {/* Ícone do X (SVG Manual para não depender de lib externa) */}
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="w-5 h-5 fill-current">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-            </svg>
-          </a>
-          <p className="mt-2 text-xs text-gray-600 font-mono">
-            {lang === "pt" ? "Siga o Caos" : "Follow the Chaos"}
+        {/* Texto da Esquerda */}
+        <div className="text-center md:text-left">
+          <h3 className="text-xl font-bold text-white mb-2 tracking-tighter">
+            XGH<span className="text-neon-green">-AI</span>
+          </h3>
+          <p className="text-gray-500 text-xs font-mono max-w-xs">
+            {lang === "pt" 
+              ? "Automatizando o caos e escalando a gambiarra desde 2026." 
+              : "Automating chaos and scaling kludges since 2026."}
           </p>
         </div>
 
-        {/* Copyright */}
-        <p className="text-gray-600 text-sm font-mono">
-          &copy; 2026 XGH-AI Platform. {lang === "pt" ? "Feito com pressa e ódio." : "Made in a hurry with hate."}
-        </p>
-        
-        <p className="text-[10px] mt-4 text-gray-800 font-mono">
-          v1.0.0-Release-Candidate-Final-Agora-Vai
+        {/* Ícones da Direita */}
+        <div className="flex items-center gap-6">
+          
+          {/* Link do X (Twitter) */}
+          <a 
+            href="https://x.com/xgh_ai"  /* <--- COLOQUE SEU LINK AQUI */
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group flex items-center justify-center w-10 h-10 rounded-full border border-gray-800 bg-gray-900/50 text-gray-400 transition-all hover:border-neon-green hover:text-neon-green hover:shadow-[0_0_15px_rgba(57,255,20,0.3)]"
+            title="Siga no X"
+          >
+            {/* Ícone do X */}
+            <i className="fa-brands fa-twitter text-lg transition-transform group-hover:rotate-12"></i>
+          </a>
+
+        </div>
+      </div>
+
+      <div className="mt-10 pt-6 border-t border-gray-900/50 text-center">
+        <p className="text-[10px] text-gray-600 font-mono uppercase tracking-widest">
+          XGH-AI © 2026. {lang === "pt" ? "Desenvolvido com ódio e café." : "Developed with hate and coffee."}
         </p>
       </div>
-      
-      {/* Efeito de Fundo do Footer */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
     </footer>
   );
 }
