@@ -78,7 +78,7 @@ function HeroContent({ lang }: HeroProps) {
       
       {/* Logotipo */}
       <div 
-        className="absolute top-6 left-6 z-50 w-20 h-20 md:w-32 md:h-32 rounded-full border border-neon-green/30 bg-black/50 backdrop-blur-sm shadow-[0_0_20px_rgba(57,255,20,0.1)] flex items-center justify-center cursor-pointer transition-all duration-700 hover:rotate-[360deg] hover:scale-110 hover:border-neon-green group p-1"
+        className="absolute top-4 left-4 md:top-6 md:left-6 z-50 w-14 h-14 md:w-32 md:h-32 rounded-full border border-neon-green/30 bg-black/50 backdrop-blur-sm shadow-[0_0_20px_rgba(57,255,20,0.1)] flex items-center justify-center cursor-pointer transition-all duration-700 hover:rotate-[360deg] hover:scale-110 hover:border-neon-green group p-1"
         onClick={showCyberMessage}
         title={t("Clique para checar a integridade do sistema", "Click to check system integrity")}
       >
