@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react"; // <--- Adicionado useRef
 import GlitchText from "@/components/ui/GlitchText";
 import CyberPlayer from "@/components/ui/CyberPlayer";
 import DiscographySection from "@/components/sections/DiscographySection";
@@ -15,6 +15,63 @@ function HeroContent({ lang }: HeroProps) {
   const t = (pt: string, en: string) => (lang === "pt" ? pt : en);
   
   const [isSystemPlaying, setIsSystemPlaying] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null); // <--- Ref do Canvas
+
+  // --- EFEITO MATRIX RESTAURADO ---
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+    
+    // Caracteres: 0, 1 e Katakana para vibe cyberpunk
+    const letters = "010101XYZアイウエオカキクケコサシスセソタチツテト"; 
+    const fontSize = 14;
+    const columns = width / fontSize;
+    const drops: number[] = [];
+
+    for (let i = 0; i < columns; i++) {
+      drops[i] = 1;
+    }
+
+    const draw = () => {
+      // Fundo preto com opacidade baixa para criar o rastro
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.fillStyle = "#39ff14"; // Verde Neon
+      ctx.font = `${fontSize}px monospace`;
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    };
+
+    const interval = setInterval(draw, 33);
+
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+  // --------------------------------
 
   useEffect(() => {
     const handlePlayerState = (e: any) => {
@@ -73,9 +130,15 @@ function HeroContent({ lang }: HeroProps) {
   };
 
   return (
-    /* pb-32 adicionado para criar o espaço entre a discografia e o final da seção */
     <section className="relative min-h-[90vh] flex flex-col justify-center items-center text-center overflow-hidden pt-20 pb-32">
       
+      {/* --- CANVAS DO EFEITO MATRIX (Inserido aqui) --- */}
+      <canvas 
+        ref={canvasRef} 
+        className="absolute inset-0 w-full h-full opacity-20 pointer-events-none z-0" 
+      />
+      {/* ----------------------------------------------- */}
+
       {/* Logotipo */}
       <div 
         className="absolute top-4 left-4 md:top-6 md:left-6 z-50 w-14 h-14 md:w-32 md:h-32 rounded-full border border-neon-green/30 bg-black/50 backdrop-blur-sm shadow-[0_0_20px_rgba(57,255,20,0.1)] flex items-center justify-center cursor-pointer transition-all duration-700 hover:rotate-[360deg] hover:scale-110 hover:border-neon-green group p-1"
