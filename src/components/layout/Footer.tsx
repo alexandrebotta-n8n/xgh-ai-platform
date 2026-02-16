@@ -50,10 +50,6 @@ export default function Footer({ lang }: FooterProps) {
       {/* 🤖 POWERED BY SECTION: Gemini & Anthropic 🤖 */}
       {/* ================================================================= */}
       <div className="mt-12 pt-8 pb-4 border-t border-gray-900/50 flex flex-col items-center gap-4 relative z-10">
-        <p className="text-[10px] font-mono text-gray-600 uppercase tracking-widest">
-          {lang === "pt" ? "Motores de Inteligência:" : "Intelligence Engines:"}
-        </p>
-
         <div className="flex flex-wrap justify-center gap-8 items-center">
             
             {/* --- Google Gemini --- */}
@@ -62,7 +58,7 @@ export default function Footer({ lang }: FooterProps) {
                 {/* Ícone simulando o brilho do Gemini */}
                 <i className="fa-solid fa-wand-magic-sparkles text-blue-400 group-hover:text-purple-400 transition-colors"></i>
                 <span className="text-gray-400 font-bold tracking-tight text-xs group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-500 transition-all">
-                    Google Gemini
+                    Gemini
                 </span>
             </a>
 

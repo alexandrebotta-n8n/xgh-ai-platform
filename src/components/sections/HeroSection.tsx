@@ -154,11 +154,7 @@ function HeroContent({ lang }: HeroProps) {
             {/* ================================================================= */}
             {/* 🤖 R2-D2: Crédito SUNO AI adicionado ao final do Rack 🤖 */}
             {/* ================================================================= */}
-            <div className="z-10 border-t border-gray-900/80 bg-black/95 p-2 pr-4 flex justify-end items-center gap-2">
-                <span className="text-[8px] md:text-[9px] font-mono text-gray-600 uppercase tracking-wider">
-                    Music engine:
-                </span>
-                
+            <div className="z-10 border-t border-gray-900/80 bg-black/95 p-2 pr-4 flex justify-center items-center gap-2">
                 {/* Link para Suno (Opcional, se quiser linkar) */}
                 <a 
                     href="https://suno.com" 
