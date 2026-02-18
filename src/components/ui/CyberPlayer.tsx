@@ -40,7 +40,6 @@ function PlayerContent() {
     }));
   };
 
-  // Função restaurada para atualizar o progresso
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       const cur = audioRef.current.currentTime;
@@ -70,6 +69,8 @@ function PlayerContent() {
               window.history.replaceState({}, '', window.location.pathname);
             } catch (err) {
               console.log("Autoplay bloqueado pelo navegador.");
+              setIsPlaying(false);
+              dispatchPlayerState(false);
             }
           }
         };
@@ -78,10 +79,19 @@ function PlayerContent() {
     }
 
     const handleForcePlay = () => {
-      audioRef.current?.play().then(() => {
-        setIsPlaying(true);
-        dispatchPlayerState(true);
-      });
+      if (audioRef.current) {
+         const playPromise = audioRef.current.play();
+         if (playPromise !== undefined) {
+             playPromise.then(() => {
+                 setIsPlaying(true);
+                 dispatchPlayerState(true);
+             }).catch(err => {
+                 console.log("Android ForcePlay block:", err);
+                 setIsPlaying(false);
+                 dispatchPlayerState(false);
+             });
+         }
+      }
     };
 
     const handleTrackChange = (e: any) => {
@@ -117,10 +127,20 @@ function PlayerContent() {
         setIsPlaying(false);
         dispatchPlayerState(false);
       } else {
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-          dispatchPlayerState(true);
-        }).catch(() => {});
+        const playPromise = audioRef.current.play();
+        
+        // Tratamento XGH para Android
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            setIsPlaying(true);
+            dispatchPlayerState(true);
+          }).catch(error => {
+            console.warn("Autoplay bloqueado (Android Policy):", error);
+            // Reverte o estado visual para manter sincronia
+            setIsPlaying(false);
+            dispatchPlayerState(false);
+          });
+        }
       }
     }
   };
@@ -128,13 +148,19 @@ function PlayerContent() {
   useEffect(() => {
     if (audioRef.current && isMounted && !isFirstLoad) {
       audioRef.current.load();
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-        dispatchPlayerState(true);
-      }).catch(() => {
-        setIsPlaying(false);
-        dispatchPlayerState(false);
-      });
+      const playPromise = audioRef.current.play();
+      
+      // Tratamento XGH para Android na troca de música
+      if (playPromise !== undefined) {
+          playPromise.then(() => {
+            setIsPlaying(true);
+            dispatchPlayerState(true);
+          }).catch((error) => {
+            console.warn("Autoplay bloqueado ao trocar faixa:", error);
+            setIsPlaying(false);
+            dispatchPlayerState(false);
+          });
+      }
     }
   }, [currentTrackIndex, isMounted]);
 
@@ -231,12 +257,15 @@ function PlayerContent() {
             </span>
         </div>
         
+        {/* === A MÁGICA DO ANDROID ESTÁ AQUI === */}
         <audio 
             ref={audioRef} 
             src={currentTrack.src} 
             onTimeUpdate={handleTimeUpdate} 
             onLoadedMetadata={onLoadedMetadata}
             onEnded={() => updateTrack((currentTrackIndex + 1) % playlist.length)} 
+            preload="auto"
+            playsInline
         />
       </div>
     </div>
