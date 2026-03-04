@@ -1,5 +1,7 @@
 "use client";
 
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+
 interface GlossaryProps {
   lang: "pt" | "en";
 }
@@ -47,10 +49,11 @@ const glossaryContent = {
 
 export default function GlossarySection({ lang }: GlossaryProps) {
   const content = glossaryContent[lang];
+  const { ref, isVisible } = useScrollReveal();
 
   return (
-    <section className="py-20 bg-dark-bg border-t border-gray-900">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <section id="glossary" className="py-20 bg-dark-bg border-t border-gray-900">
+      <div ref={ref} className={`container mx-auto px-4 max-w-6xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center text-neon-green">
           {content.title}
         </h2>

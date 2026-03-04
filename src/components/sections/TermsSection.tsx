@@ -1,5 +1,7 @@
 "use client";
 
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+
 interface TermsProps {
   lang: "pt" | "en";
 }
@@ -29,10 +31,11 @@ const termsContent = {
 
 export default function TermsSection({ lang }: TermsProps) {
   const content = termsContent[lang];
+  const { ref, isVisible } = useScrollReveal();
 
   return (
-    <section className="py-16 bg-black border-t border-gray-900 text-center">
-      <div className="container mx-auto px-4 max-w-3xl">
+    <section id="terms" className="py-16 bg-black border-t border-gray-900 text-center">
+      <div ref={ref} className={`container mx-auto px-4 max-w-3xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <h3 className="text-2xl font-bold text-gray-500 mb-8 uppercase tracking-widest">
           {content.title}
         </h3>

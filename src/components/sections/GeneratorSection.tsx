@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface GeneratorProps {
   lang: "pt" | "en";
@@ -44,6 +45,7 @@ const gambiarrasDB = {
 };
 
 export default function GeneratorSection({ lang }: GeneratorProps) {
+  const { ref, isVisible } = useScrollReveal();
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -66,7 +68,7 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
 
   return (
     <section id="gambiarra-machine" className="py-24 bg-black text-center relative overflow-hidden border-t border-gray-900">
-      <div className="container mx-auto px-4 max-w-3xl relative z-10">
+      <div ref={ref} className={`container mx-auto px-4 max-w-3xl relative z-10 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tighter">
           <span className="text-neon-purple uppercase italic">XGH</span> Debugger
         </h2>

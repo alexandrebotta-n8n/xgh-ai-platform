@@ -17,30 +17,35 @@ export default function MatrixRain() {
     canvas.width = width;
     canvas.height = height;
 
-    // Caracteres: Katakana + Números + XGH
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%XGH_AI";
     const fontSize = 14;
-    const columns = width / fontSize;
+    let columns = Math.floor(width / fontSize);
 
-    // Array para guardar a posição Y de cada coluna
     const drops: number[] = [];
     for (let i = 0; i < columns; i++) {
       drops[i] = 1;
     }
 
-    const draw = () => {
-      // Fundo preto com opacidade baixa para criar o rastro (trail effect)
+    let animationId: number;
+    let lastTime = 0;
+    const interval = 33; // ~30fps
+
+    const draw = (timestamp: number) => {
+      animationId = requestAnimationFrame(draw);
+
+      if (timestamp - lastTime < interval) return;
+      lastTime = timestamp;
+
       ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
       ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = "#0F0"; // Verde Hacker
+      ctx.fillStyle = "#0F0";
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-        // Reseta a gota para o topo aleatoriamente
         if (drops[i] * fontSize > height && Math.random() > 0.975) {
           drops[i] = 0;
         }
@@ -49,21 +54,23 @@ export default function MatrixRain() {
       }
     };
 
-    // Loop de animação
-    const interval = setInterval(draw, 33);
+    animationId = requestAnimationFrame(draw);
 
-    // Resize handler
     const handleResize = () => {
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = width;
       canvas.height = height;
+      const newColumns = Math.floor(width / fontSize);
+      while (drops.length < newColumns) drops.push(1);
+      drops.length = newColumns;
+      columns = newColumns;
     };
 
     window.addEventListener("resize", handleResize);
 
     return () => {
-      clearInterval(interval);
+      cancelAnimationFrame(animationId);
       window.removeEventListener("resize", handleResize);
     };
   }, []);

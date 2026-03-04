@@ -2,6 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
 
 // Mantenha a playlist fora do componente para que a referência seja estável
 const playlist = [
@@ -103,7 +105,7 @@ function DiscographyContent({ lang }: { lang: "pt" | "en" }) {
                   onClick={(e) => copyTrackLink(e, track.id)}
                   className={`p-1.5 cursor-pointer transition-all ${copiedId === track.id ? 'text-neon-green scale-110' : 'text-gray-700 hover:text-neon-purple opacity-40 hover:opacity-100'}`}
                 >
-                  <i className={`fa-solid ${copiedId === track.id ? 'fa-check' : 'fa-link'} text-[10px]`}></i>
+                  <FontAwesomeIcon icon={copiedId === track.id ? faCheck : faLink} className="text-[10px]" />
                 </div>
                 <span className="text-[8px] font-mono opacity-20">{track.duration}</span>
                 {isActive && (

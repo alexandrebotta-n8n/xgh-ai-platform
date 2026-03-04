@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBackwardStep, faForwardStep, faPause, faPlay, faVolumeXmark, faVolumeLow } from "@fortawesome/free-solid-svg-icons";
 
 const playlist = [
   { id: 1, title: "I don't think, I just hit the keys", artist: "XGH Band", src: "/music/I dont think, I just hit the keys.mp3" },
@@ -206,14 +208,14 @@ function PlayerContent() {
         {/* BARRA DE CONTROLE UNIFICADA */}
         <div className="bg-black px-4 py-3 flex items-center justify-between gap-4 border-b border-gray-900">
           <div className="flex items-center gap-3">
-            <button onClick={() => updateTrack(currentTrackIndex > 0 ? currentTrackIndex - 1 : playlist.length - 1)} className="text-gray-600 hover:text-neon-green transition-colors">
-              <i className="fa-solid fa-backward-step text-xs"></i>
+            <button onClick={() => updateTrack(currentTrackIndex > 0 ? currentTrackIndex - 1 : playlist.length - 1)} className="text-gray-600 hover:text-neon-green transition-colors" aria-label="Previous track">
+              <FontAwesomeIcon icon={faBackwardStep} className="text-xs" />
             </button>
-            <button onClick={togglePlay} className="w-8 h-8 rounded-full border border-neon-green/50 flex items-center justify-center text-neon-green hover:bg-neon-green hover:text-black transition-all">
-              <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'} text-xs ${!isPlaying && 'ml-0.5'}`}></i>
+            <button onClick={togglePlay} className="w-8 h-8 rounded-full border border-neon-green/50 flex items-center justify-center text-neon-green hover:bg-neon-green hover:text-black transition-all" aria-label={isPlaying ? "Pause" : "Play"}>
+              <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} className={`text-xs ${!isPlaying ? 'ml-0.5' : ''}`} />
             </button>
-            <button onClick={() => updateTrack((currentTrackIndex + 1) % playlist.length)} className="text-gray-600 hover:text-neon-green transition-colors">
-              <i className="fa-solid fa-forward-step text-xs"></i>
+            <button onClick={() => updateTrack((currentTrackIndex + 1) % playlist.length)} className="text-gray-600 hover:text-neon-green transition-colors" aria-label="Next track">
+              <FontAwesomeIcon icon={faForwardStep} className="text-xs" />
             </button>
           </div>
 
@@ -223,14 +225,15 @@ function PlayerContent() {
           </div>
 
           <div className="flex items-center gap-2 border-l border-gray-800 pl-4">
-            <i className={`fa-solid ${volume === 0 ? 'fa-volume-mute text-red-500' : 'fa-volume-low text-gray-600'} text-[10px]`}></i>
-            <input 
-              type="range" min="0" max="1" step="0.01" value={volume} 
+            <FontAwesomeIcon icon={volume === 0 ? faVolumeXmark : faVolumeLow} className={`text-[10px] ${volume === 0 ? 'text-red-500' : 'text-gray-600'}`} />
+            <input
+              type="range" min="0" max="1" step="0.01" value={volume}
+              aria-label="Volume"
               onChange={(e) => {
                 const val = parseFloat(e.target.value);
                 setVolume(val);
                 if(audioRef.current) audioRef.current.volume = val;
-              }} 
+              }}
               className="w-16 h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-neon-green"
             />
           </div>

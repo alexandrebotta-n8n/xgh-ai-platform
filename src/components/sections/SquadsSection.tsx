@@ -1,5 +1,7 @@
 "use client";
 
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+
 interface SquadsProps {
   lang: "pt" | "en";
 }
@@ -33,10 +35,11 @@ const squadsContent = {
 
 export default function SquadsSection({ lang }: SquadsProps) {
   const content = squadsContent[lang];
+  const { ref, isVisible } = useScrollReveal();
 
   return (
-    <section className="py-20 bg-black text-white border-t border-gray-900">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <section id="squads" className="py-20 bg-black text-white border-t border-gray-900">
+      <div ref={ref} className={`container mx-auto px-4 max-w-6xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-neon-purple">
             {content.title}

@@ -1,12 +1,15 @@
 "use client";
 
 import GlitchText from "@/components/ui/GlitchText";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface SectionProps {
   lang: "pt" | "en";
 }
 
 export default function ManifestoSection({ lang }: SectionProps) {
+  const { ref: introRef, isVisible: introVisible } = useScrollReveal();
+  const { ref: gridRef, isVisible: gridVisible } = useScrollReveal();
   // Função auxiliar para tradução
   const t = (pt: string, en: string) => (lang === "pt" ? pt : en);
 
@@ -94,14 +97,14 @@ export default function ManifestoSection({ lang }: SectionProps) {
   ];
 
   return (
-    <section className="py-24 bg-black text-white border-t border-gray-900 relative overflow-hidden">
+    <section id="manifesto" className="py-24 bg-black text-white border-t border-gray-900 relative overflow-hidden">
       {/* Efeito de Grid Cyberpunk no fundo */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#39ff140a_1px,transparent_1px),linear-gradient(to_bottom,#39ff140a_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)] pointer-events-none"></div>
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         
         {/* PARTE 1: A INTRODUÇÃO */}
-        <div className="mb-24 text-center max-w-4xl mx-auto">
+        <div ref={introRef} className={`mb-24 text-center max-w-4xl mx-auto transition-all duration-700 ${introVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <h2 className="text-4xl md:text-5xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-neon-green to-emerald-500">
             {t("eXtreme Go Horse Process + AI", "eXtreme Go Horse Process + AI")}
           </h2>
@@ -126,7 +129,7 @@ export default function ManifestoSection({ lang }: SectionProps) {
           </div>
 
           {/* GRID DAS LEIS */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+          <div ref={gridRef} className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 transition-all duration-700 delay-200 ${gridVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             {laws.map((law) => (
               <div 
                 key={law.id} 

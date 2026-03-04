@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBan, faThumbsUp, faThumbsDown } from "@fortawesome/free-solid-svg-icons";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface BlogProps {
   lang: "pt" | "en";
@@ -210,6 +213,7 @@ const articlesDB = [
 ];
 
 export default function BlogSection({ lang }: BlogProps) {
+  const { ref, isVisible } = useScrollReveal();
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [isMounted, setIsMounted] = useState(false);
@@ -284,7 +288,7 @@ export default function BlogSection({ lang }: BlogProps) {
           <div className="max-w-md w-full bg-black border-2 border-red-600 p-8 shadow-[0_0_50px_rgba(220,38,38,0.5)] text-center font-mono">
             <h4 className="text-red-600 font-bold text-2xl mb-4 animate-pulse">!! SECURITY BREACH !!</h4>
             <div className="w-16 h-16 mx-auto mb-4 border-4 border-red-600 rounded-full flex items-center justify-center animate-spin">
-              <i className="fa-solid fa-ban text-3xl text-red-600"></i>
+              <FontAwesomeIcon icon={faBan} className="text-3xl text-red-600" />
             </div>
             <p className="text-white text-lg leading-tight uppercase mb-6 drop-shadow-[0_0_5px_rgba(255,0,0,0.8)]">
               {censorship.msg}
@@ -300,7 +304,7 @@ export default function BlogSection({ lang }: BlogProps) {
         </div>
       )}
 
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div ref={ref} className={`container mx-auto px-4 max-w-5xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             <span className="text-neon-green">{lang === "pt" ? "Blog Oficial" : "Official Blog"}</span>
@@ -346,19 +350,21 @@ export default function BlogSection({ lang }: BlogProps) {
                       />
                       
                       <div className="flex flex-wrap gap-4 mt-8 pt-6 border-t border-gray-900/50">
-                        <button 
+                        <button
                             onClick={(e) => handleLike(art.id, e)}
+                            aria-label="Like"
                             className="relative overflow-hidden group/btn flex items-center gap-3 px-6 py-3 bg-black border border-neon-green text-neon-green rounded-sm transition-all hover:bg-neon-green hover:text-black hover:shadow-[0_0_20px_rgba(57,255,20,0.4)] active:scale-95"
                         >
-                            <i className="fa-solid fa-thumbs-up group-hover/btn:animate-bounce"></i>
+                            <FontAwesomeIcon icon={faThumbsUp} className="group-hover/btn:animate-bounce" />
                             <span className="font-mono font-bold text-sm">{isMounted ? (likes[art.id] || 0) : "..."}</span>
                         </button>
-                        
-                        <button 
+
+                        <button
                             onClick={triggerCensorship}
+                            aria-label="Dislike"
                             className="flex items-center gap-3 px-6 py-3 bg-black border border-red-900 text-red-900 rounded-sm transition-all hover:border-red-600 hover:text-red-600 hover:bg-red-600/10 active:scale-95 group/dislike"
                         >
-                            <i className="fa-solid fa-thumbs-down group-hover/dislike:rotate-12 transition-transform"></i>
+                            <FontAwesomeIcon icon={faThumbsDown} className="group-hover/dislike:rotate-12 transition-transform" />
                         </button>
 
                         <button 

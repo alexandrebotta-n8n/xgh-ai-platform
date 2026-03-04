@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useEffect, Suspense, useRef } from "react"; // <--- Adicionado useRef
+import { useState, useEffect, Suspense } from "react";
+import Image from "next/image";
 import GlitchText from "@/components/ui/GlitchText";
 import CyberPlayer from "@/components/ui/CyberPlayer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWaveSquare } from "@fortawesome/free-solid-svg-icons";
 import DiscographySection from "@/components/sections/DiscographySection";
 import { useSearchParams } from "next/navigation";
 
@@ -13,81 +16,27 @@ interface HeroProps {
 function HeroContent({ lang }: HeroProps) {
   const searchParams = useSearchParams();
   const t = (pt: string, en: string) => (lang === "pt" ? pt : en);
-  
+
   const [isSystemPlaying, setIsSystemPlaying] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null); // <--- Ref do Canvas
-
-  // --- EFEITO MATRIX RESTAURADO ---
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-    
-    // Caracteres: 0, 1 e Katakana para vibe cyberpunk
-    const letters = "010101XYZアイウエオカキクケコサシスセソタチツテト"; 
-    const fontSize = 14;
-    const columns = width / fontSize;
-    const drops: number[] = [];
-
-    for (let i = 0; i < columns; i++) {
-      drops[i] = 1;
-    }
-
-    const draw = () => {
-      // Fundo preto com opacidade baixa para criar o rastro
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.fillStyle = "#39ff14"; // Verde Neon
-      ctx.font = `${fontSize}px monospace`;
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    };
-
-    const interval = setInterval(draw, 33);
-
-    const handleResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-  // --------------------------------
 
   useEffect(() => {
-    const handlePlayerState = (e: any) => {
-      if (e.detail && typeof e.detail.playing !== 'undefined') {
-        setIsSystemPlaying(e.detail.playing);
+    const handlePlayerState = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail && typeof detail.playing !== 'undefined') {
+        setIsSystemPlaying(detail.playing);
       } else {
         setIsSystemPlaying(true);
       }
     };
 
+    const handleForcePlay = () => setIsSystemPlaying(true);
+
     window.addEventListener('xgh-player-state', handlePlayerState);
-    window.addEventListener('xgh-force-play', () => setIsSystemPlaying(true));
-    
+    window.addEventListener('xgh-force-play', handleForcePlay);
+
     return () => {
       window.removeEventListener('xgh-player-state', handlePlayerState);
-      window.removeEventListener('xgh-force-play', () => setIsSystemPlaying(true));
+      window.removeEventListener('xgh-force-play', handleForcePlay);
     };
   }, []);
 
@@ -130,25 +79,25 @@ function HeroContent({ lang }: HeroProps) {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex flex-col justify-center items-center text-center overflow-hidden pt-20 pb-32">
-      
-      {/* --- CANVAS DO EFEITO MATRIX (Inserido aqui) --- */}
-      <canvas 
-        ref={canvasRef} 
-        className="absolute inset-0 w-full h-full opacity-20 pointer-events-none z-0" 
-      />
-      {/* ----------------------------------------------- */}
+    <section id="hero" className="relative min-h-[90vh] flex flex-col justify-center items-center text-center overflow-hidden pt-20 pb-32">
 
       {/* Logotipo */}
       <div 
-        className="absolute top-4 left-4 md:top-6 md:left-6 z-50 w-14 h-14 md:w-32 md:h-32 rounded-full border border-neon-green/30 bg-black/50 backdrop-blur-sm shadow-[0_0_20px_rgba(57,255,20,0.1)] flex items-center justify-center cursor-pointer transition-all duration-700 hover:rotate-[360deg] hover:scale-110 hover:border-neon-green group p-1"
+        className="absolute top-[4.5rem] left-4 md:top-[5rem] md:left-6 z-40 w-14 h-14 md:w-28 md:h-28 rounded-full border border-neon-green/30 bg-black/50 backdrop-blur-sm shadow-[0_0_20px_rgba(57,255,20,0.1)] flex items-center justify-center cursor-pointer transition-all duration-700 hover:rotate-[360deg] hover:scale-110 hover:border-neon-green group p-1"
+        role="button"
+        tabIndex={0}
+        aria-label={t("Checar integridade do sistema", "Check system integrity")}
         onClick={showCyberMessage}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') showCyberMessage(); }}
         title={t("Clique para checar a integridade do sistema", "Click to check system integrity")}
       >
-        <img 
-          src="/logo.png" 
-          alt="XGH Logo" 
-          className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]" 
+        <Image
+          src="/logo.png"
+          alt="XGH-AI Logo - eXtreme Go Horse Process"
+          width={112}
+          height={112}
+          priority
+          className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]"
         />
       </div>
 
@@ -179,13 +128,13 @@ function HeroContent({ lang }: HeroProps) {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mt-12 pt-8 border-t border-gray-800/50">
           {[
-            { label: "Bugs/Min", val: "∞", color: "text-neon-purple" },
-            { label: "Uptime", val: "42%", color: "text-white" },
-            { label: "Coffees", val: "9000+", color: "text-white" },
-            { label: "Deploys", val: "Fridays", color: "text-red-500" }
+            { label: "Bugs/Min", val: "∞", color: "text-neon-purple", size: "text-3xl" },
+            { label: "Uptime", val: "42%", color: "text-white", size: "text-3xl" },
+            { label: t("Cafés", "Coffees"), val: "9000+", color: "text-white", size: "text-3xl" },
+            { label: "Deploys", val: t("Sexta-feira", "Fridays"), color: "text-red-500", size: "text-lg md:text-2xl" }
           ].map((stat, i) => (
-            <div key={i} className="p-4 rounded bg-gray-900/20 border border-gray-800/50 hover:border-neon-green/30 transition-all hover:bg-gray-900/40 group text-center">
-              <div className={`text-3xl font-bold font-mono mb-1 ${stat.color} group-hover:scale-110 transition-transform`}>{stat.val}</div>
+            <div key={i} className="p-4 rounded bg-gray-900/20 border border-gray-800/50 hover:border-neon-green/30 transition-all hover:bg-gray-900/40 group text-center flex flex-col justify-center">
+              <div className={`${stat.size} font-bold font-mono mb-1 ${stat.color} group-hover:scale-110 transition-transform`}>{stat.val}</div>
               <div className="text-[10px] uppercase tracking-wider text-gray-500">{stat.label}</div>
             </div>
           ))}
@@ -227,7 +176,7 @@ function HeroContent({ lang }: HeroProps) {
                     title="Audio generated by SUNO AI"
                 >
                     <div className="relative">
-                        <i className="fa-solid fa-wave-square text-gray-500 group-hover/suno:text-neon-purple text-[10px] transition-colors"></i>
+                        <FontAwesomeIcon icon={faWaveSquare} className="text-gray-500 group-hover/suno:text-neon-purple text-[10px] transition-colors" />
                     </div>
                     <span className="font-bold text-gray-400 group-hover/suno:text-white tracking-widest text-[10px] transition-colors">
                         SUNO

@@ -15,7 +15,7 @@ const config: Config = {
         'card-bg': '#111',
       },
       fontFamily: {
-        mono: ['var(--font-jetbrains-mono)'],
+        mono: ['var(--font-jetbrains)'],
       },
     },
   },

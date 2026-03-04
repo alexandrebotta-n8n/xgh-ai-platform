@@ -1,5 +1,9 @@
 "use client";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWandMagicSparkles, faBrain } from "@fortawesome/free-solid-svg-icons";
+import { faTwitter } from "@fortawesome/free-brands-svg-icons";
+
 interface FooterProps {
   lang: "pt" | "en";
 }
@@ -40,7 +44,7 @@ export default function Footer({ lang }: FooterProps) {
             title="Siga no X"
           >
             {/* Ícone do X */}
-            <i className="fa-brands fa-twitter text-lg transition-transform group-hover:rotate-12"></i>
+            <FontAwesomeIcon icon={faTwitter} className="text-lg transition-transform group-hover:rotate-12" />
           </a>
 
         </div>
@@ -56,7 +60,7 @@ export default function Footer({ lang }: FooterProps) {
             <a href="https://deepmind.google/technologies/gemini/" target="_blank" rel="noopener noreferrer" 
                className="flex items-center gap-2 group opacity-60 hover:opacity-100 transition-all">
                 {/* Ícone simulando o brilho do Gemini */}
-                <i className="fa-solid fa-wand-magic-sparkles text-blue-400 group-hover:text-purple-400 transition-colors"></i>
+                <FontAwesomeIcon icon={faWandMagicSparkles} className="text-blue-400 group-hover:text-purple-400 transition-colors" />
                 <span className="text-gray-400 font-bold tracking-tight text-xs group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-500 transition-all">
                     Gemini
                 </span>
@@ -68,7 +72,7 @@ export default function Footer({ lang }: FooterProps) {
             <a href="https://www.anthropic.com/" target="_blank" rel="noopener noreferrer" 
                className="flex items-center gap-2 group opacity-60 hover:opacity-100 transition-all">
                 {/* Ícone simulando o cérebro/Claude */}
-                <i className="fa-solid fa-brain text-orange-400/80 group-hover:text-orange-400 transition-colors"></i>
+                <FontAwesomeIcon icon={faBrain} className="text-orange-400/80 group-hover:text-orange-400 transition-colors" />
                 <span className="text-gray-400 font-bold tracking-tight text-xs group-hover:text-white transition-all">
                     Anthropic
                 </span>
