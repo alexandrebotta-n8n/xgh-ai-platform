@@ -7,6 +7,7 @@ import CyberPlayer from "@/components/ui/CyberPlayer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWaveSquare } from "@fortawesome/free-solid-svg-icons";
 import DiscographySection from "@/components/sections/DiscographySection";
+import LyricsDisplay from "@/components/ui/LyricsDisplay";
 import { useSearchParams } from "next/navigation";
 import { useSFX } from "@/hooks/useSFX";
 
@@ -391,6 +392,11 @@ function HeroContent({ lang }: HeroProps) {
               <CyberPlayer />
             </div>
             
+            {/* Parte 1.5: Letras Sincronizadas */}
+            <div className="z-15">
+              <LyricsDisplay />
+            </div>
+
             {/* Parte 2: A Playlist */}
             <div className="z-10 mt-[-1px] bg-black/90">
               <DiscographySection lang={lang} />

@@ -55,6 +55,10 @@ function PlayerContent() {
       const dur = audioRef.current.duration;
       setCurrentTime(cur);
       setProgress((cur / dur) * 100);
+      // Dispatch time for lyrics sync
+      window.dispatchEvent(new CustomEvent('xgh-player-time', {
+        detail: { currentTime: cur }
+      }));
     }
   };
 
