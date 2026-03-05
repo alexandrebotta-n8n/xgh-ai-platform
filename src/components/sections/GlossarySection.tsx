@@ -28,7 +28,8 @@ const glossaryContent = {
         { term: "YOLO Deploy", def: "Deploy direto em produção sem staging, sem testes, sem aviso. Se funcionar, é feature. Se quebrar, é aprendizado." },
         { term: "Prompt Debt", def: "Dívida técnica acumulada por prompts mal escritos e nunca documentados. Ninguém sabe como o código foi gerado, muito menos como reproduzi-lo." },
         { term: "Context Window Anxiety", def: "O medo paralisante de perder o contexto no meio de um chat com a IA e ter que explicar tudo de novo do zero." },
-        { term: "Tab-Tab-Enter Syndrome", def: "Aceitar sugestões do Copilot em sequência sem ler, criando código funcional por acidente ou bugs por negligência." }
+        { term: "Tab-Tab-Enter Syndrome", def: "Aceitar sugestões do Copilot em sequência sem ler, criando código funcional por acidente ou bugs por negligência." },
+        { term: "Deploy Friday Syndrome", def: "A compulsão irresistível de fazer deploy às 17h de sexta-feira. Sintomas: suor frio, Slack silenciado e LinkedIn atualizado preventivamente." }
     ]
   },
   en: {
@@ -52,7 +53,8 @@ const glossaryContent = {
         { term: "YOLO Deploy", def: "Deploying straight to production without staging, tests, or notice. If it works, it's a feature. If it breaks, it's a learning experience." },
         { term: "Prompt Debt", def: "Technical debt from poorly written and never documented prompts. Nobody knows how the code was generated, let alone how to reproduce it." },
         { term: "Context Window Anxiety", def: "The paralyzing fear of losing context mid-chat with AI and having to explain everything from scratch again." },
-        { term: "Tab-Tab-Enter Syndrome", def: "Accepting Copilot suggestions in sequence without reading, creating functional code by accident or bugs by negligence." }
+        { term: "Tab-Tab-Enter Syndrome", def: "Accepting Copilot suggestions in sequence without reading, creating functional code by accident or bugs by negligence." },
+        { term: "Deploy Friday Syndrome", def: "The irresistible urge to deploy at 5 PM on a Friday. Symptoms: cold sweats, Slack muted, and LinkedIn preemptively updated." }
     ]
   }
 };

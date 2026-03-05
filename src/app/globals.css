@@ -107,6 +107,23 @@ body {
   color: #fff;
 }
 
+/* --- TERMINAL GLITCH EFFECT --- */
+
+@keyframes terminal-glitch {
+  0% { transform: translate(0); filter: none; }
+  10% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
+  20% { transform: translate(2px, -1px); filter: hue-rotate(0deg); }
+  30% { transform: translate(0); clip-path: inset(40% 0 30% 0); }
+  40% { transform: translate(-1px, 2px); clip-path: inset(10% 0 60% 0); }
+  50% { transform: translate(1px, -1px); filter: brightness(1.5); }
+  60% { transform: translate(0); filter: none; clip-path: none; }
+  100% { transform: translate(0); filter: none; clip-path: none; }
+}
+
+.terminal-glitch-active {
+  animation: terminal-glitch 0.3s ease-in-out;
+}
+
 /* --- FOCUS VISIBILITY --- */
 
 *:focus-visible {
