@@ -187,22 +187,68 @@ function PlayerContent() {
             </div>
         </div>
 
-        {/* Deck de Fita */}
-        <div className="h-24 bg-[#050505] flex items-center justify-center gap-10 relative overflow-hidden border-b border-gray-900/50">
-            <div className={`relative w-16 h-16 rounded-full border-2 border-gray-800 flex items-center justify-center ${isPlaying ? 'animate-spin-slow' : ''}`}>
-                <div className="w-full h-[1px] bg-gray-900 absolute rotate-45"></div>
-                <div className="w-full h-[1px] bg-gray-900 absolute -rotate-45"></div>
-                <div className="w-10 h-10 rounded-full border border-neon-purple/10 bg-black flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-neon-green/60 shadow-[0_0_8px_#39ff14]"></div>
-                </div>
+        {/* Deck de Fita Cassete — 80s Style */}
+        <div className="h-28 bg-[#050505] flex items-center justify-center relative overflow-hidden border-b border-gray-900/50">
+            {/* Janela transparente do cassete */}
+            <div className="absolute inset-x-8 inset-y-2 rounded-lg border border-gray-800/40 bg-gray-950/50" />
+
+            {/* Fita conectando os dois rolos */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140px] h-[52px]">
+              {/* Trilha superior da fita */}
+              <div className="absolute top-0 left-[10px] right-[10px] h-[1px] bg-gradient-to-r from-amber-900/60 via-amber-800/40 to-amber-900/60" />
+              {/* Trilha inferior da fita */}
+              <div className="absolute bottom-0 left-[10px] right-[10px] h-[1px] bg-gradient-to-r from-amber-900/60 via-amber-800/40 to-amber-900/60" />
+              {/* Corpo da fita (preenchimento sutil) */}
+              <div className="absolute inset-0 mx-[10px] bg-gradient-to-b from-amber-950/10 via-amber-900/5 to-amber-950/10" />
             </div>
-            <div className={`relative w-16 h-16 rounded-full border-2 border-gray-800 flex items-center justify-center ${isPlaying ? 'animate-spin-slow' : ''}`}>
-                <div className="w-full h-[1px] bg-gray-900 absolute rotate-45"></div>
-                <div className="w-full h-[1px] bg-gray-900 absolute -rotate-45"></div>
-                <div className="w-10 h-10 rounded-full border border-neon-purple/10 bg-black flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-neon-green/60 shadow-[0_0_8px_#39ff14]"></div>
+
+            {/* Rolo esquerdo (supply — mais fita) */}
+            <div className="relative z-10 mr-14">
+              {/* Anel externo — simulando a fita enrolada */}
+              <div className={`relative w-[72px] h-[72px] rounded-full border-[3px] border-amber-900/30 bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center shadow-[inset_0_0_15px_rgba(0,0,0,0.8)] ${isPlaying ? 'animate-spin-slow' : ''}`}>
+                {/* Trilhas concêntricas da fita magnética */}
+                <div className="absolute inset-[4px] rounded-full border border-amber-900/15" />
+                <div className="absolute inset-[8px] rounded-full border border-amber-900/10" />
+                <div className="absolute inset-[12px] rounded-full border border-amber-900/8" />
+                {/* Hub central */}
+                <div className="w-8 h-8 rounded-full border-2 border-gray-700 bg-black flex items-center justify-center relative">
+                  {/* Spokes do hub (6 raios) */}
+                  <div className="absolute w-full h-[1px] bg-gray-700/80" />
+                  <div className="absolute w-full h-[1px] bg-gray-700/80 rotate-60" style={{ transform: 'rotate(60deg)' }} />
+                  <div className="absolute w-full h-[1px] bg-gray-700/80 rotate-120" style={{ transform: 'rotate(120deg)' }} />
+                  {/* Centro */}
+                  <div className="w-2.5 h-2.5 rounded-full bg-neon-green/70 shadow-[0_0_10px_#39ff14,0_0_3px_#39ff14] z-10" />
                 </div>
+              </div>
             </div>
+
+            {/* Rolo direito (take-up — menos fita) */}
+            <div className="relative z-10 ml-14">
+              <div className={`relative w-[72px] h-[72px] rounded-full border-[3px] border-amber-900/20 bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center shadow-[inset_0_0_15px_rgba(0,0,0,0.8)] ${isPlaying ? 'animate-spin-slower' : ''}`}>
+                {/* Menos trilhas (menos fita nesse rolo) */}
+                <div className="absolute inset-[6px] rounded-full border border-amber-900/10" />
+                <div className="absolute inset-[12px] rounded-full border border-amber-900/8" />
+                {/* Hub central */}
+                <div className="w-8 h-8 rounded-full border-2 border-gray-700 bg-black flex items-center justify-center relative">
+                  {/* Spokes do hub */}
+                  <div className="absolute w-full h-[1px] bg-gray-700/80" />
+                  <div className="absolute w-full h-[1px] bg-gray-700/80" style={{ transform: 'rotate(60deg)' }} />
+                  <div className="absolute w-full h-[1px] bg-gray-700/80" style={{ transform: 'rotate(120deg)' }} />
+                  {/* Centro */}
+                  <div className="w-2.5 h-2.5 rounded-full bg-neon-green/70 shadow-[0_0_10px_#39ff14,0_0_3px_#39ff14] z-10" />
+                </div>
+              </div>
+            </div>
+
+            {/* Guias da fita (pinos laterais) */}
+            <div className="absolute left-[52px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-gray-600 border border-gray-500 shadow-[0_0_3px_rgba(255,255,255,0.1)]" />
+            <div className="absolute right-[52px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-gray-600 border border-gray-500 shadow-[0_0_3px_rgba(255,255,255,0.1)]" />
+
+            {/* Cantos decorativos do deck */}
+            <div className="absolute top-2 left-3 w-1 h-1 rounded-full bg-gray-800" />
+            <div className="absolute top-2 right-3 w-1 h-1 rounded-full bg-gray-800" />
+            <div className="absolute bottom-2 left-3 w-1 h-1 rounded-full bg-gray-800" />
+            <div className="absolute bottom-2 right-3 w-1 h-1 rounded-full bg-gray-800" />
         </div>
 
         {/* BARRA DE CONTROLE UNIFICADA */}

@@ -55,7 +55,11 @@ body {
 }
 
 .animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
+  animation: spin-slow 2.5s linear infinite;
+}
+
+.animate-spin-slower {
+  animation: spin-slow 3.5s linear infinite;
 }
 
 /* --- SCROLLBARS --- */
