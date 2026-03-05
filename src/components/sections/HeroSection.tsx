@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import Image from "next/image";
 import GlitchText from "@/components/ui/GlitchText";
 import CyberPlayer from "@/components/ui/CyberPlayer";
@@ -8,6 +8,87 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWaveSquare } from "@fortawesome/free-solid-svg-icons";
 import DiscographySection from "@/components/sections/DiscographySection";
 import { useSearchParams } from "next/navigation";
+import { useSFX } from "@/hooks/useSFX";
+
+// Stats data com valores alternativos para click
+const statsConfig = {
+  pt: [
+    {
+      label: "Bugs/Min",
+      baseVal: "∞",
+      alts: ["∞+1", "NaN", "yes", "π×10⁹", "∞"],
+      color: "text-neon-purple",
+      size: "text-3xl",
+      animation: "infinity" as const,
+    },
+    {
+      label: "Uptime",
+      baseVal: "42%",
+      alts: ["Schrödinger%", "-3%", "NaN%", "404%", "42%"],
+      color: "text-white",
+      size: "text-3xl",
+      animation: "countup" as const,
+      countTo: 42,
+      suffix: "%",
+    },
+    {
+      label: "Cafés",
+      baseVal: "9000+",
+      alts: ["Over 9000!", "∞ espressos", "help", "☕×10⁶", "9000+"],
+      color: "text-white",
+      size: "text-3xl",
+      animation: "countup" as const,
+      countTo: 9000,
+      suffix: "+",
+    },
+    {
+      label: "Deploys",
+      baseVal: "Sexta-feira",
+      alts: ["23:59:59", "YOLO", "rollback?", "em prod 🔥", "Sexta-feira"],
+      color: "text-red-500",
+      size: "text-lg md:text-2xl",
+      animation: "typewriter" as const,
+    },
+  ],
+  en: [
+    {
+      label: "Bugs/Min",
+      baseVal: "∞",
+      alts: ["∞+1", "NaN", "yes", "π×10⁹", "∞"],
+      color: "text-neon-purple",
+      size: "text-3xl",
+      animation: "infinity" as const,
+    },
+    {
+      label: "Uptime",
+      baseVal: "42%",
+      alts: ["Schrödinger%", "-3%", "NaN%", "404%", "42%"],
+      color: "text-white",
+      size: "text-3xl",
+      animation: "countup" as const,
+      countTo: 42,
+      suffix: "%",
+    },
+    {
+      label: "Coffees",
+      baseVal: "9000+",
+      alts: ["Over 9000!", "∞ espressos", "help", "☕×10⁶", "9000+"],
+      color: "text-white",
+      size: "text-3xl",
+      animation: "countup" as const,
+      countTo: 9000,
+      suffix: "+",
+    },
+    {
+      label: "Deploys",
+      baseVal: "Fridays",
+      alts: ["23:59:59", "YOLO", "rollback?", "in prod 🔥", "Fridays"],
+      color: "text-red-500",
+      size: "text-lg md:text-2xl",
+      animation: "typewriter" as const,
+    },
+  ],
+};
 
 interface HeroProps {
   lang: "pt" | "en";
@@ -17,7 +98,135 @@ function HeroContent({ lang }: HeroProps) {
   const searchParams = useSearchParams();
   const t = (pt: string, en: string) => (lang === "pt" ? pt : en);
 
+  const { tick } = useSFX();
   const [isSystemPlaying, setIsSystemPlaying] = useState(false);
+
+  // Stats interativos
+  const stats = statsConfig[lang];
+  const [altIndex, setAltIndex] = useState<number[]>(stats.map(() => -1)); // -1 = valor base
+  const [statsVisible, setStatsVisible] = useState(false);
+  const [countValues, setCountValues] = useState<number[]>([0, 0, 0, 0]);
+  const [typewriterText, setTypewriterText] = useState("");
+  const statsRef = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
+  const coffeeIncrement = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [coffeeExtra, setCoffeeExtra] = useState(0);
+
+  // IntersectionObserver para countUp
+  useEffect(() => {
+    const el = statsRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          setStatsVisible(true);
+          hasAnimated.current = true;
+        }
+      },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // CountUp animation
+  useEffect(() => {
+    if (!statsVisible) return;
+
+    // Animar Uptime (index 1): 0 → 42
+    const uptimeDuration = 1200;
+    const uptimeTarget = 42;
+    const uptimeStart = performance.now();
+    const animateUptime = (now: number) => {
+      const elapsed = now - uptimeStart;
+      const progress = Math.min(elapsed / uptimeDuration, 1);
+      // easeOutExpo
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCountValues((prev) => {
+        const next = [...prev];
+        next[1] = Math.floor(eased * uptimeTarget);
+        return next;
+      });
+      if (progress < 1) requestAnimationFrame(animateUptime);
+    };
+    requestAnimationFrame(animateUptime);
+
+    // Animar Cafés (index 2): 0 → 9000
+    const cafeDuration = 2000;
+    const cafeTarget = 9000;
+    const cafeStart = performance.now();
+    const animateCafe = (now: number) => {
+      const elapsed = now - cafeStart;
+      const progress = Math.min(elapsed / cafeDuration, 1);
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCountValues((prev) => {
+        const next = [...prev];
+        next[2] = Math.floor(eased * cafeTarget);
+        return next;
+      });
+      if (progress < 1) requestAnimationFrame(animateCafe);
+    };
+    requestAnimationFrame(animateCafe);
+
+    // Typewriter para Deploys (index 3)
+    const deployText = stats[3].baseVal;
+    let charIdx = 0;
+    const twInterval = setInterval(() => {
+      charIdx++;
+      setTypewriterText(deployText.slice(0, charIdx));
+      if (charIdx >= deployText.length) clearInterval(twInterval);
+    }, 80);
+
+    // Micro-animação: Cafés incrementa +1 a cada 3s
+    coffeeIncrement.current = setInterval(() => {
+      setCoffeeExtra((prev) => prev + 1);
+    }, 3000);
+
+    return () => {
+      clearInterval(twInterval);
+      if (coffeeIncrement.current) clearInterval(coffeeIncrement.current);
+    };
+  }, [statsVisible, stats]);
+
+  // Click handler para trocar valores
+  const handleStatClick = useCallback(
+    (index: number) => {
+      tick();
+      setAltIndex((prev) => {
+        const next = [...prev];
+        next[index] = (next[index] + 1) % stats[index].alts.length;
+        // Quando volta ao último (valor original), reseta para -1
+        if (next[index] === stats[index].alts.length - 1) {
+          next[index] = -1;
+        }
+        return next;
+      });
+    },
+    [stats, tick]
+  );
+
+  // Resolver valor exibido de cada stat
+  const getStatDisplay = useCallback(
+    (index: number) => {
+      // Se está mostrando um valor alternativo
+      if (altIndex[index] >= 0) return stats[index].alts[altIndex[index]];
+
+      // CountUp ativo
+      if (!statsVisible) return "\u00A0"; // nbsp enquanto não visível
+
+      const stat = stats[index];
+      if (stat.animation === "countup") {
+        const val = countValues[index];
+        if (index === 2) return `${(val + coffeeExtra).toLocaleString()}+`;
+        return `${val}${stat.suffix || ""}`;
+      }
+      if (stat.animation === "typewriter") {
+        return typewriterText || "\u00A0";
+      }
+      return stat.baseVal; // infinity
+    },
+    [altIndex, statsVisible, countValues, typewriterText, stats, coffeeExtra]
+  );
 
   useEffect(() => {
     const handlePlayerState = (e: Event) => {
@@ -125,17 +334,33 @@ function HeroContent({ lang }: HeroProps) {
             : "The Go Horse methodology raised to the power of Artificial Intelligence."}
         </p>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mt-12 pt-8 border-t border-gray-800/50">
-          {[
-            { label: "Bugs/Min", val: "∞", color: "text-neon-purple", size: "text-3xl" },
-            { label: "Uptime", val: "42%", color: "text-white", size: "text-3xl" },
-            { label: t("Cafés", "Coffees"), val: "9000+", color: "text-white", size: "text-3xl" },
-            { label: "Deploys", val: t("Sexta-feira", "Fridays"), color: "text-red-500", size: "text-lg md:text-2xl" }
-          ].map((stat, i) => (
-            <div key={i} className="p-4 rounded bg-gray-900/20 border border-gray-800/50 hover:border-neon-green/30 transition-all hover:bg-gray-900/40 group text-center flex flex-col justify-center">
-              <div className={`${stat.size} font-bold font-mono mb-1 ${stat.color} group-hover:scale-110 transition-transform`}>{stat.val}</div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-500">{stat.label}</div>
+        {/* Stats Grid — Interativo */}
+        <div
+          ref={statsRef}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mt-12 pt-8 border-t border-gray-800/50"
+        >
+          {stats.map((stat, i) => (
+            <div
+              key={i}
+              onClick={() => handleStatClick(i)}
+              className="p-4 rounded bg-gray-900/20 border border-gray-800/50 hover:border-neon-green/30 transition-all hover:bg-gray-900/40 group text-center flex flex-col justify-center cursor-pointer select-none active:scale-95"
+              title={t("Clique para glitchar", "Click to glitch")}
+            >
+              <div
+                className={`${stat.size} font-bold font-mono mb-1 ${altIndex[i] >= 0 ? "text-neon-green animate-pulse" : stat.color} group-hover:scale-110 transition-all duration-300 ${
+                  stat.animation === "infinity" && altIndex[i] < 0
+                    ? "animate-[pulse_3s_ease-in-out_infinite]"
+                    : ""
+                }`}
+              >
+                {getStatDisplay(i)}
+                {stat.animation === "typewriter" && altIndex[i] < 0 && statsVisible && typewriterText.length < stat.baseVal.length && (
+                  <span className="inline-block w-[2px] h-[1em] bg-red-500 ml-0.5 animate-[pulse_0.5s_steps(1)_infinite] align-middle" />
+                )}
+              </div>
+              <div className="text-[10px] uppercase tracking-wider text-gray-500">
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>
