@@ -117,6 +117,12 @@ export default function RootLayout({
         />
       </head>
       <body className="font-mono bg-dark-bg text-white antialiased selection:bg-neon-purple selection:text-white">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-neon-green focus:text-black focus:px-4 focus:py-2 focus:rounded focus:font-bold focus:text-sm"
+        >
+          Skip to content
+        </a>
         <MatrixRain />
         {children}
         <Analytics />

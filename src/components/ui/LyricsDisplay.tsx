@@ -33,7 +33,7 @@ export default function LyricsDisplay() {
   const nextLine = currentLineIndex + 1 < lines.length ? lines[currentLineIndex + 1] : null;
 
   return (
-    <div className="w-full bg-[#050505] border-x-2 border-gray-800">
+    <div className="w-full bg-[#050505] border-x-2 border-gray-800" role="region" aria-label="Lyrics" aria-live="polite">
       {/* Header */}
       <div className="px-4 py-1 flex items-center justify-between border-b border-gray-800/50">
         <div className="flex items-center gap-2">

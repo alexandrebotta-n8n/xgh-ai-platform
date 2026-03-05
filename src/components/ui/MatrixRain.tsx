@@ -29,8 +29,10 @@ export default function MatrixRain() {
     let animationId: number;
     let lastTime = 0;
     const interval = 33; // ~30fps
+    let paused = false;
 
     const draw = (timestamp: number) => {
+      if (paused) return;
       animationId = requestAnimationFrame(draw);
 
       if (timestamp - lastTime < interval) return;
@@ -67,11 +69,23 @@ export default function MatrixRain() {
       columns = newColumns;
     };
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        paused = true;
+        cancelAnimationFrame(animationId);
+      } else {
+        paused = false;
+        animationId = requestAnimationFrame(draw);
+      }
+    };
+
     window.addEventListener("resize", handleResize);
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
 

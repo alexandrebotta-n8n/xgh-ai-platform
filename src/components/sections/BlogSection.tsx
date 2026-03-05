@@ -210,6 +210,100 @@ const articlesDB = [
            <h4 class="text-neon-green font-bold mt-4 mb-2">4. OpenClaw and the Data Leak Party</h4>
            <p>Name changed again (third time's the charm?) to <strong>OpenClaw</strong>.<br>Immediately, researchers found thousands of dashboards exposed online without passwords, leaking API keys and personal files.<br><strong>Conclusion:</strong> OpenClaw is the definitive Go Horse OS. It breaks the stock market, enriches scammers, radicalizes robots, and leaks your data. It is perfection.</p>`
     }
+  },
+  {
+    id: "pair",
+    category: { pt: "Engenharia", en: "Engineering" },
+    title: {
+      pt: "Pair Programming com IA: Quem é o Junior?",
+      en: "Pair Programming with AI: Who's the Junior?"
+    },
+    meta: {
+      pt: "Escrito por: Copilot Anônimo | Quarta, 02:30 AM (no modo dark)",
+      en: "Written by: Anonymous Copilot | Wednesday, 02:30 AM (in dark mode)"
+    },
+    preview: {
+      pt: "Você digita, a IA completa. Você deleta, a IA completa de novo. Você aceita, e o bug vai pra produção. Quem é o sênior nessa dupla? Spoiler: ninguém...",
+      en: "You type, AI autocompletes. You delete, AI autocompletes again. You accept, and the bug goes to production. Who's the senior in this pair? Spoiler: nobody..."
+    },
+    body: {
+      pt: `<p>O pair programming nasceu com uma premissa nobre: dois cérebros pensam melhor que um. Com a IA, descobrimos que dois sistemas podem gerar o dobro de bugs na metade do tempo.</p>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">A Dinâmica do Caos</h4>
+           <p>No modelo clássico, o "driver" escreve e o "navigator" revisa. No XGH-AI, o driver aceita tudo que a IA sugere e o navigator está no celular vendo memes. É eficiente? Não. É rápido? Muito.</p>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">O Ciclo Vicioso do Tab-Accept</h4>
+           <div class="bg-black p-4 border border-gray-800 font-mono text-sm mb-4">
+               1. IA sugere 15 linhas de código.<br>
+               2. Dev lê a primeira linha. Parece ok.<br>
+               3. Dev aperta Tab. Deploy.<br>
+               4. Produção cai.<br>
+               5. Dev culpa a IA. IA não tem sentimentos. Perfeito.
+           </div>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">Conclusão</h4>
+           <p>Pair programming com IA é como dançar tango com um robô aspirador: ele vai para todos os lados, mas eventualmente a sala fica limpa. Ou não. O importante é que o commit foi feito.</p>`,
+      en: `<p>Pair programming was born with a noble premise: two brains think better than one. With AI, we discovered that two systems can generate twice the bugs in half the time.</p>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">The Chaos Dynamic</h4>
+           <p>In the classic model, the "driver" writes and the "navigator" reviews. In XGH-AI, the driver accepts everything AI suggests and the navigator is on their phone looking at memes. Is it efficient? No. Is it fast? Very.</p>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">The Vicious Tab-Accept Cycle</h4>
+           <div class="bg-black p-4 border border-gray-800 font-mono text-sm mb-4">
+               1. AI suggests 15 lines of code.<br>
+               2. Dev reads the first line. Looks ok.<br>
+               3. Dev presses Tab. Deploy.<br>
+               4. Production crashes.<br>
+               5. Dev blames AI. AI has no feelings. Perfect.
+           </div>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">Conclusion</h4>
+           <p>Pair programming with AI is like dancing tango with a robot vacuum: it goes everywhere, but eventually the room gets clean. Or not. What matters is the commit was made.</p>`
+    }
+  },
+  {
+    id: "gitblame",
+    category: { pt: "DevOps", en: "DevOps" },
+    title: {
+      pt: "Git Blame: O Tribunal do Código na Era da IA",
+      en: "Git Blame: The Code Tribunal in the AI Era"
+    },
+    meta: {
+      pt: "Escrito por: Juiz GPT-4 (Modelo treinado em Law & Order) | Quinta, 16:20",
+      en: "Written by: Judge GPT-4 (Model trained on Law & Order) | Thursday, 4:20 PM"
+    },
+    preview: {
+      pt: "Antes da IA, o git blame apontava para um humano que podia ser confrontado na daily. Agora aponta para 'copilot-suggestion-7a3f'. Quem você vai processar? A OpenAI? Boa sorte...",
+      en: "Before AI, git blame pointed to a human who could be confronted at standup. Now it points to 'copilot-suggestion-7a3f'. Who are you going to sue? OpenAI? Good luck..."
+    },
+    body: {
+      pt: `<p>O <code>git blame</code> era a ferramenta definitiva de accountability. Cada linha tinha um dono, cada bug tinha um culpado. Mas na era da IA, o culpado é um modelo estatístico treinado em bilhões de parâmetros. Tente mandar ele para o RH.</p>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">A Cadeia de Culpa Moderna</h4>
+           <div class="bg-black p-4 border border-gray-800 font-mono text-sm mb-4">
+               $ git blame api/payment.ts<br>
+               <span class="text-gray-500">a7f3e2d</span> (copilot-ghost  2025-03-14)  if (amount > 0) { charge(amount * -1); }<br>
+               <span class="text-gray-500">b8c4f1a</span> (dev-humano     2025-03-14)  // LGTM, aprovado pelo Copilot
+           </div>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">O Protocolo de Defesa</h4>
+           <p>Quando o incidente acontece, siga o fluxo XGH-AI de gerenciamento de culpa:</p>
+           <ul class="list-disc pl-5 mb-4 text-gray-400 text-sm">
+               <li><strong>Passo 1:</strong> Culpe a IA.</li>
+               <li><strong>Passo 2:</strong> A IA não pode se defender. Caso encerrado.</li>
+               <li><strong>Passo 3:</strong> Se o cliente insistir, gere um relatório de 30 páginas usando a própria IA explicando por que o bug era uma "otimização prematura do fluxo financeiro".</li>
+           </ul>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">Conclusão</h4>
+           <p>O git blame morreu. Longa vida ao <code>git blame --ai-scapegoat</code>. No futuro, todos os commits serão assinados por "IA Anônima" e ninguém será responsável por nada. Isso é progresso.</p>`,
+      en: `<p><code>git blame</code> was the ultimate accountability tool. Every line had an owner, every bug had a culprit. But in the AI era, the culprit is a statistical model trained on billions of parameters. Try sending it to HR.</p>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">The Modern Blame Chain</h4>
+           <div class="bg-black p-4 border border-gray-800 font-mono text-sm mb-4">
+               $ git blame api/payment.ts<br>
+               <span class="text-gray-500">a7f3e2d</span> (copilot-ghost  2025-03-14)  if (amount > 0) { charge(amount * -1); }<br>
+               <span class="text-gray-500">b8c4f1a</span> (dev-human      2025-03-14)  // LGTM, approved by Copilot
+           </div>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">The Defense Protocol</h4>
+           <p>When the incident happens, follow the XGH-AI blame management flow:</p>
+           <ul class="list-disc pl-5 mb-4 text-gray-400 text-sm">
+               <li><strong>Step 1:</strong> Blame the AI.</li>
+               <li><strong>Step 2:</strong> AI can't defend itself. Case closed.</li>
+               <li><strong>Step 3:</strong> If the client insists, generate a 30-page report using AI itself explaining why the bug was a "premature optimization of the financial flow".</li>
+           </ul>
+           <h4 class="text-neon-green font-bold mt-4 mb-2">Conclusion</h4>
+           <p>Git blame is dead. Long live <code>git blame --ai-scapegoat</code>. In the future, all commits will be signed by "Anonymous AI" and nobody will be responsible for anything. This is progress.</p>`
+    }
   }
 ];
 

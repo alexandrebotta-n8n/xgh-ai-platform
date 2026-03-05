@@ -4,12 +4,14 @@ import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import Image from "next/image";
 import GlitchText from "@/components/ui/GlitchText";
 import CyberPlayer from "@/components/ui/CyberPlayer";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWaveSquare } from "@fortawesome/free-solid-svg-icons";
 import DiscographySection from "@/components/sections/DiscographySection";
 import LyricsDisplay from "@/components/ui/LyricsDisplay";
 import { useSearchParams } from "next/navigation";
 import { useSFX } from "@/hooks/useSFX";
+import { usePlayer } from "@/contexts/PlayerContext";
 
 // Stats data com valores alternativos para click
 const statsConfig = {
@@ -104,7 +106,7 @@ function HeroContent({ lang }: HeroProps) {
   const t = (pt: string, en: string) => (lang === "pt" ? pt : en);
 
   const { tick } = useSFX();
-  const [isSystemPlaying, setIsSystemPlaying] = useState(false);
+  const { isPlaying: isSystemPlaying } = usePlayer();
 
   // Stats interativos
   const stats = statsConfig[lang];
@@ -233,26 +235,7 @@ function HeroContent({ lang }: HeroProps) {
     [altIndex, statsVisible, countValues, typewriterText, stats, coffeeExtra]
   );
 
-  useEffect(() => {
-    const handlePlayerState = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail && typeof detail.playing !== 'undefined') {
-        setIsSystemPlaying(detail.playing);
-      } else {
-        setIsSystemPlaying(true);
-      }
-    };
-
-    const handleForcePlay = () => setIsSystemPlaying(true);
-
-    window.addEventListener('xgh-player-state', handlePlayerState);
-    window.addEventListener('xgh-force-play', handleForcePlay);
-
-    return () => {
-      window.removeEventListener('xgh-player-state', handlePlayerState);
-      window.removeEventListener('xgh-force-play', handleForcePlay);
-    };
-  }, []);
+  // Player state now comes from PlayerContext via usePlayer()
 
   const showCyberMessage = () => {
     const existingToast = document.getElementById("xgh-toast");
@@ -383,18 +366,22 @@ function HeroContent({ lang }: HeroProps) {
           </div>
 
           {/* Container do Rack */}
-          <div className="relative flex flex-col w-full bg-black rounded-lg overflow-hidden border border-gray-800/50 shadow-2xl">
+          <div data-player-rack className="relative flex flex-col w-full bg-black rounded-lg overflow-hidden border border-gray-800/50 shadow-2xl">
             <div className="absolute top-2 left-2 w-1 h-1 rounded-full bg-gray-800 z-50"></div>
             <div className="absolute top-2 right-2 w-1 h-1 rounded-full bg-gray-800 z-50"></div>
 
             {/* Parte 1: O Player (Fita) */}
             <div className="z-20">
-              <CyberPlayer />
+              <ErrorBoundary>
+                <CyberPlayer />
+              </ErrorBoundary>
             </div>
-            
+
             {/* Parte 1.5: Letras Sincronizadas */}
             <div className="z-15">
-              <LyricsDisplay />
+              <ErrorBoundary>
+                <LyricsDisplay />
+              </ErrorBoundary>
             </div>
 
             {/* Parte 2: A Playlist */}

@@ -4,26 +4,21 @@ import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackwardStep, faForwardStep, faPause, faPlay, faVolumeXmark, faVolumeLow } from "@fortawesome/free-solid-svg-icons";
-
-const playlist = [
-  { id: 1, title: "I don't think, I just hit the keys", artist: "XGH Band", src: "/music/I dont think, I just hit the keys.mp3" },
-  { id: 2, title: "The Hallucination Honey (Indie)", artist: "Green Robot", src: "/music/The Hallucination Honey (Indie).mp3" },
-  { id: 3, title: "Lawless Lines", artist: "Morgan GPT", src: "/music/Lawless Lines.mp3" },
-  { id: 4, title: "The Hallucination Honey (Upbeat)", artist: "Dua IPA", src: "/music/The Hallucination Honey (Upbeat).mp3" },
-  { id: 5, title: "The silence is loud in the office tonigh", artist: "Crazy Model", src: "/music/The silence is loud in the office tonigh.mp3" },
-  { id: 6, title: "Silicon Tumbleweeds", artist: "NullPointer Cowboys", src: "/music/Silicon Tumbleweeds.mp3" }
-];
+import { playlist } from "@/data/playlist";
+import { FFT_SIZE, FFT_SMOOTHING, SPECTRUM_COLOR_START, SPECTRUM_COLOR_END, SPECTRUM_ALPHA_MIN, SPECTRUM_REFLECTION_OPACITY, SPECTRUM_BAR_GAP, DEFAULT_VOLUME, TIME_WARNING_THRESHOLD } from "@/constants/player";
+import { usePlayer } from "@/contexts/PlayerContext";
 
 function PlayerContent() {
   const searchParams = useSearchParams();
   const audioRef = useRef<HTMLAudioElement>(null);
-  
+  const { setPlayerState, emitTime, onForcePlay, onForcePlayTrack, onTogglePlay } = usePlayer();
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState(DEFAULT_VOLUME);
   const [isMounted, setIsMounted] = useState(false);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
 
@@ -43,11 +38,9 @@ function PlayerContent() {
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const dispatchPlayerState = (playing: boolean) => {
-    window.dispatchEvent(new CustomEvent('xgh-player-state', { 
-      detail: { playing, trackIndex: currentTrackIndex } 
-    }));
-  };
+  const syncPlayerState = useCallback((playing: boolean, trackIndex?: number) => {
+    setPlayerState({ isPlaying: playing, currentTrackIndex: trackIndex ?? currentTrackIndex });
+  }, [setPlayerState, currentTrackIndex]);
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
@@ -55,22 +48,19 @@ function PlayerContent() {
       const dur = audioRef.current.duration;
       setCurrentTime(cur);
       setProgress((cur / dur) * 100);
-      // Dispatch time for lyrics sync
-      window.dispatchEvent(new CustomEvent('xgh-player-time', {
-        detail: { currentTime: cur }
-      }));
+      emitTime(cur);
     }
   };
 
   useEffect(() => {
     setIsMounted(true);
     const trackParam = searchParams.get("track");
-    
+
     if (trackParam) {
       const index = parseInt(trackParam) - 1;
       if (index >= 0 && index < playlist.length) {
         setCurrentTrackIndex(index);
-        setIsFirstLoad(false); 
+        setIsFirstLoad(false);
 
         const startDeepLink = async () => {
           if (audioRef.current) {
@@ -78,12 +68,11 @@ function PlayerContent() {
               audioRef.current.load();
               await audioRef.current.play();
               setIsPlaying(true);
-              dispatchPlayerState(true);
+              syncPlayerState(true, index);
               window.history.replaceState({}, '', window.location.pathname);
-            } catch (err) {
-              console.log("Autoplay bloqueado pelo navegador.");
+            } catch {
               setIsPlaying(false);
-              dispatchPlayerState(false);
+              syncPlayerState(false, index);
             }
           }
         };
@@ -91,37 +80,48 @@ function PlayerContent() {
       }
     }
 
-    const handleForcePlay = () => {
+    const unsubForcePlay = onForcePlay(() => {
       if (audioRef.current) {
          const playPromise = audioRef.current.play();
          if (playPromise !== undefined) {
              playPromise.then(() => {
                  setIsPlaying(true);
-                 dispatchPlayerState(true);
-             }).catch(err => {
-                 console.log("Android ForcePlay block:", err);
+                 syncPlayerState(true);
+             }).catch(() => {
                  setIsPlaying(false);
-                 dispatchPlayerState(false);
+                 syncPlayerState(false);
              });
          }
       }
-    };
+    });
 
-    const handleTrackChange = (e: any) => {
-      if (e.detail && e.detail.id) {
-        setIsFirstLoad(false);
-        setCurrentTrackIndex(e.detail.id - 1);
+    const unsubForcePlayTrack = onForcePlayTrack((trackId: number) => {
+      setIsFirstLoad(false);
+      setCurrentTrackIndex(trackId - 1);
+    });
+
+    const unsubTogglePlay = onTogglePlay(() => {
+      if (audioRef.current) {
+        if (audioRef.current.paused) {
+          const p = audioRef.current.play();
+          if (p) {
+            p.then(() => { setIsPlaying(true); syncPlayerState(true); })
+             .catch(() => { setIsPlaying(false); syncPlayerState(false); });
+          }
+        } else {
+          audioRef.current.pause();
+          setIsPlaying(false);
+          syncPlayerState(false);
+        }
       }
-    };
-
-    window.addEventListener('xgh-force-play', handleForcePlay);
-    window.addEventListener('xgh-force-play-track', handleTrackChange);
+    });
 
     return () => {
-      window.removeEventListener('xgh-force-play', handleForcePlay);
-      window.removeEventListener('xgh-force-play-track', handleTrackChange);
+      unsubForcePlay();
+      unsubForcePlayTrack();
+      unsubTogglePlay();
     };
-  }, []); 
+  }, []);
 
   const updateTrack = (newIndex: number) => {
     setIsFirstLoad(false);
@@ -138,20 +138,17 @@ function PlayerContent() {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
-        dispatchPlayerState(false);
+        syncPlayerState(false);
       } else {
         const playPromise = audioRef.current.play();
-        
-        // Tratamento XGH para Android
+
         if (playPromise !== undefined) {
           playPromise.then(() => {
             setIsPlaying(true);
-            dispatchPlayerState(true);
-          }).catch(error => {
-            console.warn("Autoplay bloqueado (Android Policy):", error);
-            // Reverte o estado visual para manter sincronia
+            syncPlayerState(true);
+          }).catch(() => {
             setIsPlaying(false);
-            dispatchPlayerState(false);
+            syncPlayerState(false);
           });
         }
       }
@@ -162,16 +159,14 @@ function PlayerContent() {
     if (audioRef.current && isMounted && !isFirstLoad) {
       audioRef.current.load();
       const playPromise = audioRef.current.play();
-      
-      // Tratamento XGH para Android na troca de música
+
       if (playPromise !== undefined) {
           playPromise.then(() => {
             setIsPlaying(true);
-            dispatchPlayerState(true);
-          }).catch((error) => {
-            console.warn("Autoplay bloqueado ao trocar faixa:", error);
+            syncPlayerState(true);
+          }).catch(() => {
             setIsPlaying(false);
-            dispatchPlayerState(false);
+            syncPlayerState(false);
           });
       }
     }
@@ -185,8 +180,8 @@ function PlayerContent() {
     try {
       const ctx = new AudioContext();
       const analyser = ctx.createAnalyser();
-      analyser.fftSize = 128; // 64 barras
-      analyser.smoothingTimeConstant = 0.8;
+      analyser.fftSize = FFT_SIZE;
+      analyser.smoothingTimeConstant = FFT_SMOOTHING;
       const source = ctx.createMediaElementSource(audioRef.current);
       source.connect(analyser);
       analyser.connect(ctx.destination);
@@ -226,32 +221,29 @@ function PlayerContent() {
     ctx.clearRect(0, 0, w, h);
 
     const barCount = bufferLength;
-    const gap = 1;
-    const barWidth = (w - gap * (barCount - 1)) / barCount;
+    const barWidth = (w - SPECTRUM_BAR_GAP * (barCount - 1)) / barCount;
 
     for (let i = 0; i < barCount; i++) {
       const value = dataArray[i] / 255;
       const barHeight = value * h;
 
-      // Gradiente: verde neon → roxo neon baseado na frequência
       const ratio = i / barCount;
-      const r = Math.floor(57 + ratio * (168 - 57));     // 39 → a8
-      const g = Math.floor(255 - ratio * (255 - 56));     // ff → 38
-      const b = Math.floor(20 + ratio * (255 - 20));      // 14 → ff
-      const alpha = 0.6 + value * 0.4;
+      const r = Math.floor(SPECTRUM_COLOR_START.r + ratio * (SPECTRUM_COLOR_END.r - SPECTRUM_COLOR_START.r));
+      const g = Math.floor(SPECTRUM_COLOR_START.g + ratio * (SPECTRUM_COLOR_END.g - SPECTRUM_COLOR_START.g));
+      const b = Math.floor(SPECTRUM_COLOR_START.b + ratio * (SPECTRUM_COLOR_END.b - SPECTRUM_COLOR_START.b));
+      const alpha = SPECTRUM_ALPHA_MIN + value * (1 - SPECTRUM_ALPHA_MIN);
 
       ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
       ctx.fillRect(
-        i * (barWidth + gap),
+        i * (barWidth + SPECTRUM_BAR_GAP),
         h - barHeight,
         barWidth,
         barHeight
       );
 
-      // Reflexo sutil (mirror inferior)
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.15})`;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * SPECTRUM_REFLECTION_OPACITY})`;
       ctx.fillRect(
-        i * (barWidth + gap),
+        i * (barWidth + SPECTRUM_BAR_GAP),
         h,
         barWidth,
         barHeight * 0.3
@@ -261,14 +253,25 @@ function PlayerContent() {
     rafRef.current = requestAnimationFrame(drawSpectrum);
   }, []);
 
-  // Iniciar/parar loop de renderização
+  // Iniciar/parar loop de renderização (pausa quando tab em background)
   useEffect(() => {
-    if (isPlaying) {
-      initAnalyser();
-      rafRef.current = requestAnimationFrame(drawSpectrum);
-    }
+    if (!isPlaying) return;
+
+    initAnalyser();
+    rafRef.current = requestAnimationFrame(drawSpectrum);
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      } else {
+        rafRef.current = requestAnimationFrame(drawSpectrum);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [isPlaying, initAnalyser, drawSpectrum]);
 
@@ -399,7 +402,7 @@ function PlayerContent() {
         {/* Footer com Timers */}
         <div className="flex justify-between px-4 py-1.5 bg-black font-mono text-[8px] tracking-widest text-gray-600">
             <span>{formatTime(currentTime)}</span>
-            <span className={timeLeft < 10 && isPlaying ? 'text-red-500 animate-pulse' : 'text-neon-purple opacity-40'}>
+            <span className={timeLeft < TIME_WARNING_THRESHOLD && isPlaying ? 'text-red-500 animate-pulse' : 'text-neon-purple opacity-40'}>
               {formatTime(duration)}
             </span>
         </div>
@@ -425,7 +428,7 @@ function PlayerContent() {
             onTimeUpdate={handleTimeUpdate} 
             onLoadedMetadata={onLoadedMetadata}
             onEnded={() => updateTrack((currentTrackIndex + 1) % playlist.length)} 
-            preload="auto"
+            preload="none"
             playsInline
         />
       </div>

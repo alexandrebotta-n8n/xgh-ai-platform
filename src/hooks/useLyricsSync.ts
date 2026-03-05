@@ -2,50 +2,36 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { lyricsData, LyricLine } from "@/data/lyrics";
+import { usePlayer } from "@/contexts/PlayerContext";
 
 interface LyricsSyncState {
   currentLineIndex: number;
   lines: LyricLine[];
-  trackId: number | null;
+  trackId: number;
   isPlaying: boolean;
   hasLyrics: boolean;
 }
 
 export function useLyricsSync(): LyricsSyncState {
-  const [trackIndex, setTrackIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { isPlaying, currentTrackIndex, subscribeTime } = usePlayer();
   const [currentLineIndex, setCurrentLineIndex] = useState(-1);
   const currentTimeRef = useRef(0);
   const linesRef = useRef<LyricLine[]>([]);
 
-  // Listen for track/play state changes
+  // Subscribe to time updates (ref-based, no re-renders)
   useEffect(() => {
-    const handleState = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail) {
-        if (typeof detail.playing !== "undefined") setIsPlaying(detail.playing);
-        if (typeof detail.trackIndex !== "undefined") {
-          setTrackIndex(detail.trackIndex);
-          setCurrentLineIndex(-1); // reset on track change
-        }
-      }
-    };
-    window.addEventListener("xgh-player-state", handleState);
-    return () => window.removeEventListener("xgh-player-state", handleState);
-  }, []);
+    return subscribeTime((time: number) => {
+      currentTimeRef.current = time;
+    });
+  }, [subscribeTime]);
 
-  // Listen for time updates (stored in ref — no re-renders)
+  // Reset on track change
   useEffect(() => {
-    const handleTime = (e: Event) => {
-      const { currentTime } = (e as CustomEvent).detail;
-      currentTimeRef.current = currentTime;
-    };
-    window.addEventListener("xgh-player-time", handleTime);
-    return () => window.removeEventListener("xgh-player-time", handleTime);
-  }, []);
+    setCurrentLineIndex(-1);
+  }, [currentTrackIndex]);
 
   // Resolve lyrics for current track (trackIndex is 0-based, trackId is 1-based)
-  const trackId = trackIndex + 1;
+  const trackId = currentTrackIndex + 1;
   const trackLyrics = lyricsData[trackId];
   const lines = trackLyrics?.lines || [];
   linesRef.current = lines;

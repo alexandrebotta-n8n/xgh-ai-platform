@@ -23,7 +23,12 @@ const glossaryContent = {
         { term: "Arquitetura de Alucinação", def: "Estrutura baseada em código que ninguém entende e prompts que ninguém salvou." },
         { term: "Backup de Esperança", def: "Confiar que a IA terá sempre o histórico do chat quando a produção explodir." },
         { term: "Senioridade por Volume", def: "Gerar 2.000 linhas de código redundante para 'assustar' o bug até ele sumir." },
-        { term: "Cavalo de Tróia", def: "Solução gerada em 2 segundos que introduz 14 vulnerabilidades novas no sistema." }
+        { term: "Cavalo de Tróia", def: "Solução gerada em 2 segundos que introduz 14 vulnerabilidades novas no sistema." },
+        { term: "Vibe Coding", def: "Programar baseado em vibes, não em specs. Se o código 'parece certo', ele está certo. Testes são para quem não confia no universo." },
+        { term: "YOLO Deploy", def: "Deploy direto em produção sem staging, sem testes, sem aviso. Se funcionar, é feature. Se quebrar, é aprendizado." },
+        { term: "Prompt Debt", def: "Dívida técnica acumulada por prompts mal escritos e nunca documentados. Ninguém sabe como o código foi gerado, muito menos como reproduzi-lo." },
+        { term: "Context Window Anxiety", def: "O medo paralisante de perder o contexto no meio de um chat com a IA e ter que explicar tudo de novo do zero." },
+        { term: "Tab-Tab-Enter Syndrome", def: "Aceitar sugestões do Copilot em sequência sem ler, criando código funcional por acidente ou bugs por negligência." }
     ]
   },
   en: {
@@ -42,7 +47,12 @@ const glossaryContent = {
         { term: "Hallucination Architecture", def: "Structure based on code no one understands and prompts no one saved." },
         { term: "Backup of Hope", def: "Trusting that AI will always have the chat history when production explodes." },
         { term: "Seniority by Volume", def: "Generating 2,000 lines of redundant code to 'scare' the bug away." },
-        { term: "Trojan Horse", def: "Solution generated in 2 seconds that introduces 14 new security vulnerabilities." }
+        { term: "Trojan Horse", def: "Solution generated in 2 seconds that introduces 14 new security vulnerabilities." },
+        { term: "Vibe Coding", def: "Programming based on vibes, not specs. If the code 'feels right', it's right. Tests are for those who don't trust the universe." },
+        { term: "YOLO Deploy", def: "Deploying straight to production without staging, tests, or notice. If it works, it's a feature. If it breaks, it's a learning experience." },
+        { term: "Prompt Debt", def: "Technical debt from poorly written and never documented prompts. Nobody knows how the code was generated, let alone how to reproduce it." },
+        { term: "Context Window Anxiety", def: "The paralyzing fear of losing context mid-chat with AI and having to explain everything from scratch again." },
+        { term: "Tab-Tab-Enter Syndrome", def: "Accepting Copilot suggestions in sequence without reading, creating functional code by accident or bugs by negligence." }
     ]
   }
 };
