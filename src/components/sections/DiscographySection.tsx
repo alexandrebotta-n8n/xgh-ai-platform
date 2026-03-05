@@ -133,7 +133,7 @@ function DiscographyContent({ lang }: { lang: "pt" | "en" }) {
       </div>
 
       {/* Lista */}
-      <div className="max-h-[320px] overflow-y-auto custom-scrollbar bg-gradient-to-b from-black to-[#050505]">
+      <div className="bg-gradient-to-b from-black to-[#050505]">
         {playlist.map((track) => {
           const isActive = activeTrackId === track.id.toString();
           const isBioOpen = expandedBio === track.id;

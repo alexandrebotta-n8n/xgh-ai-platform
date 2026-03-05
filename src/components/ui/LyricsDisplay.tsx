@@ -1,25 +1,12 @@
 "use client";
 
-import { useRef, useEffect } from "react";
 import { useLyricsSync } from "@/hooks/useLyricsSync";
 
 export default function LyricsDisplay() {
   const { currentLineIndex, lines, isPlaying, hasLyrics } = useLyricsSync();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  // Auto-scroll to center the current line
-  useEffect(() => {
-    if (currentLineIndex < 0 || !containerRef.current) return;
-    const lineEl = lineRefs.current[currentLineIndex];
-    if (!lineEl) return;
-    lineEl.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [currentLineIndex]);
 
   // Don't render if track has no lyrics
   if (!hasLyrics) return null;
-
-  const VISIBLE_RANGE = 3;
 
   // Idle / paused state
   if (!isPlaying && currentLineIndex <= 0) {
@@ -39,6 +26,11 @@ export default function LyricsDisplay() {
       </div>
     );
   }
+
+  // Get the lines to display: prev, current, next
+  const prevLine = currentLineIndex > 0 ? lines[currentLineIndex - 1] : null;
+  const currentLine = currentLineIndex >= 0 ? lines[currentLineIndex] : null;
+  const nextLine = currentLineIndex + 1 < lines.length ? lines[currentLineIndex + 1] : null;
 
   return (
     <div className="w-full bg-[#050505] border-x-2 border-gray-800">
@@ -63,52 +55,22 @@ export default function LyricsDisplay() {
         </span>
       </div>
 
-      {/* Scrollable lyrics area */}
-      <div
-        ref={containerRef}
-        className="h-24 overflow-y-auto custom-scrollbar relative"
-        style={{ scrollBehavior: "smooth" }}
-      >
-        {/* Top fade */}
-        <div className="sticky top-0 left-0 right-0 h-4 bg-gradient-to-b from-black to-transparent z-10 pointer-events-none" />
-
-        <div className="px-4 py-1">
-          {lines.map((line, i) => {
-            const isCurrent = i === currentLineIndex;
-            const distance =
-              currentLineIndex >= 0 ? Math.abs(i - currentLineIndex) : Infinity;
-            const isPast = i < currentLineIndex;
-
-            let opacity = "opacity-[0.12]";
-            if (isCurrent) opacity = "opacity-100";
-            else if (distance <= VISIBLE_RANGE)
-              opacity = isPast ? "opacity-30" : "opacity-40";
-            else if (distance <= VISIBLE_RANGE + 2) opacity = "opacity-[0.15]";
-
-            return (
-              <div
-                key={i}
-                ref={(el) => {
-                  lineRefs.current[i] = el;
-                }}
-                className={`
-                  py-0.5 text-center font-mono transition-all duration-500 ease-out
-                  ${
-                    isCurrent
-                      ? "text-neon-green text-[11px] font-bold scale-105 drop-shadow-[0_0_8px_rgba(57,255,20,0.6)]"
-                      : `text-[9px] text-gray-500 ${opacity}`
-                  }
-                  ${line.text === "" ? "h-3" : ""}
-                `}
-              >
-                {line.text || (isCurrent ? "..." : "")}
-              </div>
-            );
-          })}
+      {/* Lyrics area — fixed, no scroll */}
+      <div className="h-[72px] flex flex-col items-center justify-center px-4 gap-0.5 overflow-hidden">
+        {/* Previous line */}
+        <div className="text-[9px] font-mono text-gray-600 opacity-40 text-center truncate w-full transition-all duration-500">
+          {prevLine?.text || ""}
         </div>
 
-        {/* Bottom fade */}
-        <div className="sticky bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none" />
+        {/* Current line */}
+        <div className="text-[11px] font-mono font-bold text-neon-green text-center w-full transition-all duration-500 drop-shadow-[0_0_8px_rgba(57,255,20,0.6)]">
+          {currentLine?.text || "..."}
+        </div>
+
+        {/* Next line */}
+        <div className="text-[9px] font-mono text-gray-600 opacity-40 text-center truncate w-full transition-all duration-500">
+          {nextLine?.text || ""}
+        </div>
       </div>
     </div>
   );
