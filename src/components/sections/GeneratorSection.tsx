@@ -492,7 +492,7 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
-  }, [history, loading, bootLines]);
+  }, [history, loading, bootLines, displayedText]);
 
   // ─── Boot Sequence ───
   useEffect(() => {
