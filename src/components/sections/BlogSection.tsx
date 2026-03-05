@@ -356,7 +356,11 @@ export default function BlogSection({ lang }: BlogProps) {
                             className="relative overflow-hidden group/btn flex items-center gap-3 px-6 py-3 bg-black border border-neon-green text-neon-green rounded-sm transition-all hover:bg-neon-green hover:text-black hover:shadow-[0_0_20px_rgba(57,255,20,0.4)] active:scale-95"
                         >
                             <FontAwesomeIcon icon={faThumbsUp} className="group-hover/btn:animate-bounce" />
-                            <span className="font-mono font-bold text-sm">{isMounted ? (likes[art.id] || 0) : "..."}</span>
+                            <span className="font-mono font-bold text-sm">
+                              {isMounted ? (likes[art.id] || 0) : (
+                                <span className="inline-block w-8 h-4 bg-gray-800 rounded animate-pulse align-middle"></span>
+                              )}
+                            </span>
                         </button>
 
                         <button

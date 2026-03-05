@@ -11,6 +11,7 @@ interface TerminalEntry {
   command: string;
   response: string;
   color?: string;
+  typed?: boolean;
 }
 
 const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
@@ -154,6 +155,8 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<TerminalEntry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [displayedText, setDisplayedText] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
   const [cmdIndex, setCmdIndex] = useState(-1);
@@ -252,10 +255,28 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
             command: rawCmd.trim(),
             response,
             color,
+            typed: false,
           };
           return updated;
         });
         setLoading(false);
+        setTyping(true);
+        setDisplayedText("");
+
+        let charIndex = 0;
+        const typeInterval = setInterval(() => {
+          charIndex++;
+          setDisplayedText(response.slice(0, charIndex));
+          if (charIndex >= response.length) {
+            clearInterval(typeInterval);
+            setTyping(false);
+            setHistory((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = { ...updated[updated.length - 1], typed: true };
+              return updated;
+            });
+          }
+        }, 20);
       }, 600 + Math.random() * 600);
     },
     [lang, t, getHelpText]
@@ -263,7 +284,7 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading || !input.trim()) return;
+    if (loading || typing || !input.trim()) return;
     processCommand(input);
     setInput("");
   };
@@ -355,23 +376,30 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
             )}
 
             {/* Command history */}
-            {history.map((entry, i) => (
-              <div key={i} className="mb-4">
-                <div className="text-sm flex items-start gap-2">
-                  <span className="text-neon-green shrink-0">❯</span>
-                  <span className="text-gray-300">{entry.command}</span>
-                </div>
-                {entry.response && (
-                  <div
-                    className={`text-sm mt-1 pl-5 leading-relaxed whitespace-pre-wrap ${
-                      entry.color || "text-white"
-                    }`}
-                  >
-                    {entry.response}
+            {history.map((entry, i) => {
+              const isLast = i === history.length - 1;
+              const showText = isLast && !entry.typed ? displayedText : entry.response;
+              return (
+                <div key={i} className="mb-4">
+                  <div className="text-sm flex items-start gap-2">
+                    <span className="text-neon-green shrink-0">❯</span>
+                    <span className="text-gray-300">{entry.command}</span>
                   </div>
-                )}
-              </div>
-            ))}
+                  {showText && (
+                    <div
+                      className={`text-sm mt-1 pl-5 leading-relaxed whitespace-pre-wrap ${
+                        entry.color || "text-white"
+                      }`}
+                    >
+                      {showText}
+                      {isLast && typing && (
+                        <span className="inline-block w-2 h-4 bg-neon-green ml-0.5 animate-pulse align-middle"></span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             {/* Loading */}
             {loading && (
@@ -381,7 +409,7 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
             )}
 
             {/* Input line */}
-            {isMounted && !loading && (
+            {isMounted && !loading && !typing && (
               <form onSubmit={handleSubmit} className="flex items-center gap-2 text-sm">
                 <span className="text-neon-green shrink-0">❯</span>
                 <input
@@ -421,9 +449,9 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
             <button
               key={btn.cmd}
               onClick={() => {
-                if (!loading) processCommand(btn.cmd);
+                if (!loading && !typing) processCommand(btn.cmd);
               }}
-              disabled={loading}
+              disabled={loading || typing}
               className="px-4 py-2 bg-transparent border border-gray-800 text-gray-500 font-mono text-[10px] uppercase tracking-[0.2em] transition-all hover:border-neon-green hover:text-neon-green hover:shadow-[0_0_15px_rgba(57,255,20,0.1)] disabled:opacity-30"
             >
               {btn.label}
