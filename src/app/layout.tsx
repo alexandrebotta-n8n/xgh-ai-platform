@@ -22,10 +22,15 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://xghai.com"),
   title: "XGH-AI | Go Horse Process",
   description: "A evolução da gambiarra com inteligência artificial. A metodologia Go Horse elevada à potência da IA.",
   icons: {
-    icon: "/icon.png",
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
   openGraph: {
     title: "XGH-AI | Go Horse Process",

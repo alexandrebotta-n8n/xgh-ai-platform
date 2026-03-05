@@ -92,7 +92,7 @@ function HeroContent({ lang }: HeroProps) {
         title={t("Clique para checar a integridade do sistema", "Click to check system integrity")}
       >
         <Image
-          src="/logo.png"
+          src="/logo.webp"
           alt="XGH-AI Logo - eXtreme Go Horse Process"
           width={112}
           height={112}
