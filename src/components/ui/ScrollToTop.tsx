@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSFX } from "@/hooks/useSFX";
 
 export default function ScrollToTop() {
+  const { beep } = useSFX();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -15,6 +17,7 @@ export default function ScrollToTop() {
   }, []);
 
   const scrollToTop = () => {
+    beep();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

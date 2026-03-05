@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBan, faThumbsUp, faThumbsDown } from "@fortawesome/free-solid-svg-icons";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { useSFX } from "@/hooks/useSFX";
 
 interface BlogProps {
   lang: "pt" | "en";
@@ -214,6 +215,7 @@ const articlesDB = [
 
 export default function BlogSection({ lang }: BlogProps) {
   const { ref, isVisible } = useScrollReveal();
+  const { error: errorSFX, beep } = useSFX();
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [isMounted, setIsMounted] = useState(false);
@@ -237,6 +239,7 @@ export default function BlogSection({ lang }: BlogProps) {
 
   const handleLike = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    beep();
     const currentCount = likes[id] || 0;
     const newCount = currentCount + 1;
     setLikes(prev => ({ ...prev, [id]: newCount }));
@@ -245,6 +248,7 @@ export default function BlogSection({ lang }: BlogProps) {
 
   const triggerCensorship = (e: React.MouseEvent) => {
     e.stopPropagation();
+    errorSFX();
     const messages = lang === "pt" ? [
       "ERRO 403: ESTUPIDEZ DETECTADA. OPINIÃO NEGATIVA BLOQUEADA.",
       "SISTEMA ANTI-HATER ATIVADO: LOGS ENVIADOS PARA O SEU CHEFE.",

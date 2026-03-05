@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { useSFX } from "@/hooks/useSFX";
 
 interface GeneratorProps {
   lang: "pt" | "en";
@@ -152,6 +153,7 @@ const gambiarrasDB = {
 
 export default function GeneratorSection({ lang }: GeneratorProps) {
   const { ref, isVisible } = useScrollReveal();
+  const { glitch, tick } = useSFX();
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<TerminalEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -220,6 +222,7 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
       }
 
       setLoading(true);
+      glitch();
       setHistory((prev) => [...prev, { command: rawCmd.trim(), response: "" }]);
 
       setTimeout(() => {
@@ -264,8 +267,11 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
         setDisplayedText("");
 
         let charIndex = 0;
+        let tickCounter = 0;
         const typeInterval = setInterval(() => {
           charIndex++;
+          tickCounter++;
+          if (tickCounter % 4 === 0) tick();
           setDisplayedText(response.slice(0, charIndex));
           if (charIndex >= response.length) {
             clearInterval(typeInterval);
@@ -279,7 +285,7 @@ export default function GeneratorSection({ lang }: GeneratorProps) {
         }, 20);
       }, 600 + Math.random() * 600);
     },
-    [lang, t, getHelpText]
+    [lang, t, getHelpText, glitch, tick]
   );
 
   const handleSubmit = (e: React.FormEvent) => {
