@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackwardStep, faForwardStep, faPause, faPlay, faVolumeXmark, faVolumeLow } from "@fortawesome/free-solid-svg-icons";
@@ -26,6 +26,13 @@ function PlayerContent() {
   const [volume, setVolume] = useState(0.5);
   const [isMounted, setIsMounted] = useState(false);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+  // Web Audio API — Espectrograma
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const rafRef = useRef<number>(0);
 
   const currentTrack = playlist[currentTrackIndex];
 
@@ -168,6 +175,99 @@ function PlayerContent() {
 
   const timeLeft = duration - currentTime;
 
+  // Inicializar AudioContext + Analyser na primeira interação
+  const initAnalyser = useCallback(() => {
+    if (audioCtxRef.current || !audioRef.current) return;
+    try {
+      const ctx = new AudioContext();
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 128; // 64 barras
+      analyser.smoothingTimeConstant = 0.8;
+      const source = ctx.createMediaElementSource(audioRef.current);
+      source.connect(analyser);
+      analyser.connect(ctx.destination);
+      audioCtxRef.current = ctx;
+      analyserRef.current = analyser;
+      sourceRef.current = source;
+    } catch (e) {
+      // Fallback silencioso se Web Audio não disponível
+    }
+  }, []);
+
+  // Desenhar espectrograma no canvas
+  const drawSpectrum = useCallback(() => {
+    const canvas = canvasRef.current;
+    const analyser = analyserRef.current;
+    if (!canvas || !analyser) {
+      rafRef.current = requestAnimationFrame(drawSpectrum);
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+    }
+
+    ctx.clearRect(0, 0, w, h);
+
+    const barCount = bufferLength;
+    const gap = 1;
+    const barWidth = (w - gap * (barCount - 1)) / barCount;
+
+    for (let i = 0; i < barCount; i++) {
+      const value = dataArray[i] / 255;
+      const barHeight = value * h;
+
+      // Gradiente: verde neon → roxo neon baseado na frequência
+      const ratio = i / barCount;
+      const r = Math.floor(57 + ratio * (168 - 57));     // 39 → a8
+      const g = Math.floor(255 - ratio * (255 - 56));     // ff → 38
+      const b = Math.floor(20 + ratio * (255 - 20));      // 14 → ff
+      const alpha = 0.6 + value * 0.4;
+
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      ctx.fillRect(
+        i * (barWidth + gap),
+        h - barHeight,
+        barWidth,
+        barHeight
+      );
+
+      // Reflexo sutil (mirror inferior)
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.15})`;
+      ctx.fillRect(
+        i * (barWidth + gap),
+        h,
+        barWidth,
+        barHeight * 0.3
+      );
+    }
+
+    rafRef.current = requestAnimationFrame(drawSpectrum);
+  }, []);
+
+  // Iniciar/parar loop de renderização
+  useEffect(() => {
+    if (isPlaying) {
+      initAnalyser();
+      rafRef.current = requestAnimationFrame(drawSpectrum);
+    }
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [isPlaying, initAnalyser, drawSpectrum]);
+
   return (
     <div className="w-full relative">
       <div className="relative bg-black border-2 border-gray-800 rounded-t-lg rounded-b-none border-b-0 overflow-hidden shadow-2xl">
@@ -175,15 +275,9 @@ function PlayerContent() {
         {/* Header Superior */}
         <div className="bg-gray-900 px-4 py-1.5 flex justify-between items-center border-b border-gray-800">
             <span className="text-[9px] font-mono text-gray-500 uppercase tracking-[0.2em]">XGH_UNIT.01</span>
-            <div className="flex items-end gap-[2px] h-3">
-                {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className={`w-[2px] bg-neon-purple ${isPlaying ? 'animate-bounce' : 'h-[2px]'}`} 
-                         style={{ 
-                            height: isPlaying ? `${Math.floor(Math.random() * 80) + 20}%` : '20%', 
-                            animationDuration: `${(i * 0.1) + 0.2}s` 
-                         }}>
-                    </div>
-                ))}
+            <div className="flex items-center gap-1.5">
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${isPlaying ? 'bg-neon-green shadow-[0_0_6px_#39ff14] animate-pulse' : 'bg-gray-700'}`} />
+              <span className="text-[7px] font-mono text-gray-600 uppercase">{isPlaying ? 'REC' : 'IDLE'}</span>
             </div>
         </div>
 
@@ -305,7 +399,21 @@ function PlayerContent() {
               {formatTime(duration)}
             </span>
         </div>
-        
+
+        {/* Espectrograma */}
+        <div className="relative bg-black border-t border-gray-900/30">
+          <canvas
+            ref={canvasRef}
+            className="w-full h-10 block"
+          />
+          {/* Linha de base neon */}
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-neon-green/30 to-transparent" />
+          {/* Label */}
+          <div className="absolute top-0.5 right-2 text-[6px] font-mono text-gray-700 uppercase tracking-widest">
+            FFT_64
+          </div>
+        </div>
+
         {/* === A MÁGICA DO ANDROID ESTÁ AQUI === */}
         <audio 
             ref={audioRef} 
