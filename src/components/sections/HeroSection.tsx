@@ -25,6 +25,7 @@ const statsConfig = {
       label: "Uptime",
       baseVal: "42%",
       alts: ["Schrödinger%", "-3%", "NaN%", "404%", "42%"],
+      altSizes: ["text-lg md:text-xl", "", "", "", ""],
       color: "text-white",
       size: "text-3xl",
       animation: "countup" as const,
@@ -35,6 +36,7 @@ const statsConfig = {
       label: "Cafés",
       baseVal: "9000+",
       alts: ["Over 9000!", "∞ espressos", "help", "☕×10⁶", "9000+"],
+      altSizes: ["text-lg md:text-xl", "text-lg md:text-xl", "", "", ""],
       color: "text-white",
       size: "text-3xl",
       animation: "countup" as const,
@@ -63,6 +65,7 @@ const statsConfig = {
       label: "Uptime",
       baseVal: "42%",
       alts: ["Schrödinger%", "-3%", "NaN%", "404%", "42%"],
+      altSizes: ["text-lg md:text-xl", "", "", "", ""],
       color: "text-white",
       size: "text-3xl",
       animation: "countup" as const,
@@ -73,6 +76,7 @@ const statsConfig = {
       label: "Coffees",
       baseVal: "9000+",
       alts: ["Over 9000!", "∞ espressos", "help", "☕×10⁶", "9000+"],
+      altSizes: ["text-lg md:text-xl", "text-lg md:text-xl", "", "", ""],
       color: "text-white",
       size: "text-3xl",
       animation: "countup" as const,
@@ -339,30 +343,34 @@ function HeroContent({ lang }: HeroProps) {
           ref={statsRef}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mt-12 pt-8 border-t border-gray-800/50"
         >
-          {stats.map((stat, i) => (
-            <div
-              key={i}
-              onClick={() => handleStatClick(i)}
-              className="p-4 rounded bg-gray-900/20 border border-gray-800/50 hover:border-neon-green/30 transition-all hover:bg-gray-900/40 group text-center flex flex-col justify-center cursor-pointer select-none active:scale-95"
-              title={t("Clique para glitchar", "Click to glitch")}
-            >
+          {stats.map((stat, i) => {
+            const activeAltSize = altIndex[i] >= 0 && (stat as any).altSizes?.[altIndex[i]];
+            const displaySize = activeAltSize || stat.size;
+            return (
               <div
-                className={`${stat.size} font-bold font-mono mb-1 ${altIndex[i] >= 0 ? "text-neon-green animate-pulse" : stat.color} group-hover:scale-110 transition-all duration-300 ${
-                  stat.animation === "infinity" && altIndex[i] < 0
-                    ? "animate-[pulse_3s_ease-in-out_infinite]"
-                    : ""
-                }`}
+                key={i}
+                onClick={() => handleStatClick(i)}
+                className="p-4 h-[88px] rounded bg-gray-900/20 border border-gray-800/50 hover:border-neon-green/30 transition-all hover:bg-gray-900/40 group text-center flex flex-col justify-center cursor-pointer select-none active:scale-95 overflow-hidden"
+                title={t("Clique para glitchar", "Click to glitch")}
               >
-                {getStatDisplay(i)}
-                {stat.animation === "typewriter" && altIndex[i] < 0 && statsVisible && typewriterText.length < stat.baseVal.length && (
-                  <span className="inline-block w-[2px] h-[1em] bg-red-500 ml-0.5 animate-[pulse_0.5s_steps(1)_infinite] align-middle" />
-                )}
+                <div
+                  className={`${displaySize} font-bold font-mono mb-1 truncate ${altIndex[i] >= 0 ? "text-neon-green animate-pulse" : stat.color} group-hover:scale-110 transition-all duration-300 ${
+                    stat.animation === "infinity" && altIndex[i] < 0
+                      ? "animate-[pulse_3s_ease-in-out_infinite]"
+                      : ""
+                  }`}
+                >
+                  {getStatDisplay(i)}
+                  {stat.animation === "typewriter" && altIndex[i] < 0 && statsVisible && typewriterText.length < stat.baseVal.length && (
+                    <span className="inline-block w-[2px] h-[1em] bg-red-500 ml-0.5 animate-[pulse_0.5s_steps(1)_infinite] align-middle" />
+                  )}
+                </div>
+                <div className="text-[10px] uppercase tracking-wider text-gray-500">
+                  {stat.label}
+                </div>
               </div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-500">
-                {stat.label}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* --- CONSOLE DE ÁUDIO UNIFICADO (RACK STYLE) --- */}
