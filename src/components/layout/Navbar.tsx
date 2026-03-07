@@ -24,32 +24,33 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 60);
-    };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
+      // Scroll-spy: find active section based on scroll position
+      // Works reliably with lazy-loaded (dynamic) sections
+      const offset = window.innerHeight * 0.35;
+      let current = "";
+      for (const item of navItems) {
+        const el = document.getElementById(item.id);
+        if (el) {
+          const top = el.getBoundingClientRect().top;
+          if (top <= offset) {
+            current = item.id;
           }
         }
-      },
-      { rootMargin: "-40% 0px -55% 0px" }
-    );
-
-    const sections = navItems.map((item) => document.getElementById(item.id)).filter(Boolean);
-    sections.forEach((section) => observer.observe(section!));
+      }
+      setActiveSection(current);
+    };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      observer.disconnect();
     };
   }, []);
 
   const scrollTo = (id: string) => {
+    setActiveSection(id);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMobileOpen(false);
   };
